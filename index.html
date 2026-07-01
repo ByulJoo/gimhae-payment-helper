@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신세계 복합결제 도우미</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #eef2f7;
+      color: #1e293b;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ── VIEW TOGGLE BAR ── */
+    .view-toggle-bar {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 20px;
+      background: #1e293b;
+      height: 42px;
+    }
+    .toggle-label {
+      font-size: .73rem;
+      color: rgba(255,255,255,.42);
+      font-weight: 500;
+      letter-spacing: .04em;
+    }
+    .toggle-btns { display: flex; }
+    .view-btn {
+      padding: 5px 15px;
+      font-size: .78rem;
+      font-weight: 700;
+      font-family: inherit;
+      border: 1px solid rgba(255,255,255,.28);
+      background: transparent;
+      color: rgba(255,255,255,.52);
+      cursor: pointer;
+      transition: background .14s, color .14s;
+      line-height: 1.5;
+    }
+    .view-btn:first-child { border-radius: 5px 0 0 5px; }
+    .view-btn:last-child  { border-radius: 0 5px 5px 0; border-left: none; }
+    .view-btn.active      { background: #fff; color: #1e293b; border-color: #fff; }
+    .view-btn:not(.active):hover { background: rgba(255,255,255,.12); color: #fff; }
+    @media print { .view-toggle-bar { display: none !important; } }
+
+    /* ── PC LAYOUT WRAPPERS ── */
+    #appOuter { padding: 20px 16px 60px; }
+    #appShell { max-width: 880px; margin: 0 auto; }
+
+    /* ── HEADER ── */
+    .app-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: white;
+      padding: 30px 28px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 24px rgba(37,99,235,.35);
+      text-align: center;
+    }
+    .app-header h1 { font-size: 1.9rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 6px; }
+    .app-header p  { font-size: .95rem; opacity: .85; }
+
+    /* ── SELECTION CARD ── */
+    .selection-card {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+    }
+    .cat-block + .cat-block { margin-top: 24px; padding-top: 24px; border-top: 1px solid #e2e8f0; }
+
+    .cat-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 9px 14px;
+      border-radius: 8px;
+      border-left: 4px solid currentColor;
+      margin-bottom: 14px;
+    }
+    .cat-coupon .cat-header { color: #5b21b6; background: #f5f3ff; }
+    .cat-pay    .cat-header { color: #1d4ed8; background: #eff6ff; }
+    .cat-sale   .cat-header { color: #065f46; background: #ecfdf5; }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+
+    .cb-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: border-color .12s, background .12s;
+      font-size: .85rem;
+      font-weight: 500;
+      color: #334155;
+      user-select: none;
+    }
+    .cb-label:hover   { border-color: #93c5fd; background: #f0f7ff; }
+    .cb-label.checked { border-color: #2563eb; background: #eff6ff; color: #1d4ed8; }
+
+    .cat-coupon .cb-label:hover                { border-color: #c4b5fd; background: #faf5ff; }
+    .cat-coupon .cb-label.checked              { border-color: #7c3aed; background: #f5f3ff; color: #5b21b6; }
+    .cat-coupon .cb-label input[type=checkbox] { accent-color: #7c3aed; }
+    .cat-pay    .cb-label:hover                { border-color: #93c5fd; background: #eff6ff; }
+    .cat-pay    .cb-label.checked              { border-color: #2563eb; background: #eff6ff; color: #1d4ed8; }
+    .cat-pay    .cb-label input[type=checkbox] { accent-color: #2563eb; }
+    .cat-sale   .cb-label:hover                { border-color: #6ee7b7; background: #f0fdf4; }
+    .cat-sale   .cb-label.checked              { border-color: #059669; background: #ecfdf5; color: #065f46; }
+    .cat-sale   .cb-label input[type=checkbox] { accent-color: #059669; }
+
+    .cb-label input[type=checkbox] {
+      width: 17px; height: 17px;
+      accent-color: #2563eb;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* ── CATEGORY HINTS ── */
+    .cat-hints {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .cat-hint-line {
+      font-size: .78rem;
+      color: #64748b;
+      line-height: 1.75;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+
+    body.mobile-preview .cat-hint-line { font-size: .8rem; }
+
+    /* ── SUMMARY & BUTTONS ── */
+    .sel-summary { text-align: center; font-size: .9rem; color: #64748b; margin-bottom: 14px; }
+    .sel-count   { font-weight: 700; color: #2563eb; font-size: 1rem; }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .btn {
+      padding: 14px 38px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: inherit;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .14s;
+      letter-spacing: -.01em;
+    }
+    .btn-confirm {
+      background: #2563eb;
+      color: white;
+      box-shadow: 0 4px 14px rgba(37,99,235,.35);
+      min-width: 130px;
+    }
+    .btn-confirm:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn-confirm:active { transform: none; }
+    .btn-reset { background: white; color: #64748b; border: 2px solid #cbd5e1; }
+    .btn-reset:hover { border-color: #94a3b8; background: #f8fafc; }
+
+    /* ── STATUS BANNER ── */
+    .status-banner {
+      border-radius: 14px;
+      padding: 30px 24px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .status-banner .s-icon  { font-size: 3rem; margin-bottom: 10px; line-height: 1; }
+    .status-banner .s-title { font-size: 2rem; font-weight: 800; letter-spacing: -.02em; }
+    .status-banner .s-sub   { margin-top: 8px; font-size: 1rem; }
+    .banner-ok      { background: #f0fdf4; border: 3px solid #86efac; color: #166534; }
+    .banner-fail    { background: #fff1f2; border: 3px solid #fda4af; color: #9f1239; }
+    .banner-caution { background: #fffbeb; border: 3px solid #fcd34d; color: #92400e; }
+
+    /* ── RESULT CARDS ── */
+    .res-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px 24px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.07);
+    }
+    .res-card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .conflict-list { display: flex; flex-direction: column; gap: 8px; }
+    .conflict-row  {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 15px;
+      background: #fff1f2;
+      border: 1.5px solid #fda4af;
+      border-radius: 8px;
+      font-size: .97rem;
+      color: #be123c;
+      font-weight: 500;
+    }
+    .cf-badge {
+      width: 22px; height: 22px;
+      background: #e11d48;
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 900;
+      flex-shrink: 0;
+    }
+    .cf-vs { color: #f43f5e; font-weight: 700; margin: 0 2px; }
+
+    .alt-intro {
+      font-size: .9rem; color: #475569;
+      margin-bottom: 14px; padding: 10px 14px;
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+    }
+    .alt-list { display: flex; flex-direction: column; gap: 10px; }
+    .alt-item {
+      padding: 14px 16px;
+      background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px;
+    }
+    .alt-label {
+      font-size: .78rem; font-weight: 700; color: #16a34a;
+      text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px;
+    }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      padding: 5px 12px;
+      background: white; border: 1.5px solid #86efac; border-radius: 20px;
+      font-size: .9rem; color: #15803d; font-weight: 600;
+    }
+    .more-alts { text-align: center; font-size: .88rem; color: #6b7280; padding: 8px 0 0; }
+
+    .note-list { display: flex; flex-direction: column; gap: 9px; }
+    .note-row  {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 12px 15px; background: #fffbeb;
+      border: 1.5px solid #fcd34d; border-radius: 9px;
+    }
+    .note-name { font-size: .88rem; font-weight: 700; color: #92400e; white-space: nowrap; flex-shrink: 0; line-height: 1.6; }
+    .note-text { font-size: .92rem; color: #78350f; line-height: 1.65; }
+
+    .cr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .cr-box  { padding: 14px 16px; border-radius: 10px; border: 1.5px solid; }
+    .cr-box.yes { background: #f0fdf4; border-color: #86efac; }
+    .cr-box.no  { background: #fff1f2; border-color: #fda4af; }
+    .cr-box-title { font-size: .95rem; font-weight: 700; margin-bottom: 10px; }
+    .cr-box.yes .cr-box-title { color: #15803d; }
+    .cr-box.no  .cr-box-title { color: #be123c; }
+    .cr-items { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .cr-items li { font-size: .92rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .cr-box.yes .cr-items li { color: #15803d; }
+    .cr-box.no  .cr-items li { color: #be123c; }
+    .cr-items li::before { content: '•'; font-size: 1.1rem; flex-shrink: 0; }
+    .cr-empty { font-size: .88rem; opacity: .55; font-style: italic; }
+
+    .global-note {
+      background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px;
+      padding: 13px 15px; font-size: .92rem; color: #475569; line-height: 1.7;
+    }
+    .global-note + .global-note { margin-top: 8px; }
+
+    .cr-status {
+      border-radius: 10px;
+      padding: 18px 16px 14px;
+      text-align: center;
+      margin-bottom: 14px;
+      border: 2px solid;
+    }
+    .cr-status .cr-s-icon  { font-size: 1.9rem; line-height: 1; margin-bottom: 7px; }
+    .cr-status .cr-s-title { font-size: 1.1rem; font-weight: 800; letter-spacing: -.02em; }
+    .cr-status .cr-s-tags  { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 10px; }
+    .cr-status .cr-s-tag   { padding: 3px 11px; border-radius: 20px; font-size: .85rem; font-weight: 600; border: 1.5px solid; }
+    .cr-status.cr-ok   { background: #f0fdf4; border-color: #86efac; color: #166534; }
+    .cr-status.cr-ok   .cr-s-tag { background: white; border-color: #86efac; color: #15803d; }
+    .cr-status.cr-fail { background: #fff1f2; border-color: #fda4af; color: #9f1239; }
+    .cr-status.cr-fail .cr-s-tag { background: white; border-color: #fda4af; color: #be123c; }
+    body.mobile-preview .cr-status             { padding: 13px 12px 10px; margin-bottom: 11px; }
+    body.mobile-preview .cr-status .cr-s-icon  { font-size: 1.55rem; margin-bottom: 5px; }
+    body.mobile-preview .cr-status .cr-s-title { font-size: .97rem; }
+    body.mobile-preview .cr-status .cr-s-tag   { font-size: .78rem; padding: 2px 9px; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1e293b; color: white;
+      padding: 12px 24px; border-radius: 30px;
+      font-size: .95rem; font-weight: 600;
+      opacity: 0; transition: opacity .25s, transform .25s;
+      pointer-events: none; white-space: nowrap; z-index: 9999;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ══════════════════════════════════════════════
+       MOBILE FRAME — wide screen PC preview
+       (body.mobile-preview.wide-screen)
+    ══════════════════════════════════════════════ */
+    body.mobile-preview.wide-screen {
+      background: #4b5563;
+    }
+    body.mobile-preview.wide-screen #appOuter {
+      background: #4b5563;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 32px 20px 52px;
+      min-height: calc(100vh - 42px);
+    }
+    body.mobile-preview.wide-screen #appShell {
+      width: 360px;
+      max-width: 360px;
+      height: 800px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: white;
+      border-radius: 40px;
+      border: 6px solid #111827;
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.55),
+        inset 0 0 0 1px rgba(255,255,255,.07);
+      flex-shrink: 0;
+      scroll-behavior: smooth;
+      margin: 0;
+    }
+    body.mobile-preview.wide-screen #appShell::-webkit-scrollbar { width: 3px; }
+    body.mobile-preview.wide-screen #appShell::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+
+    /* ══════════════════════════════════════════════
+       MOBILE CONTENT OVERRIDES
+       (body.mobile-preview — both frame & real device)
+    ══════════════════════════════════════════════ */
+    body.mobile-preview .app-header {
+      border-radius: 0;
+      padding: 18px 16px 14px;
+      margin-bottom: 0;
+      box-shadow: none;
+    }
+    body.mobile-preview .app-header h1 { font-size: 1.3rem; margin-bottom: 3px; }
+    body.mobile-preview .app-header p  { font-size: .8rem; }
+
+    body.mobile-preview .selection-card {
+      border-radius: 0;
+      padding: 14px 14px 16px;
+      margin-bottom: 0;
+      box-shadow: none;
+      border-top: 1px solid #e2e8f0;
+    }
+    body.mobile-preview .cat-block + .cat-block { margin-top: 16px; padding-top: 16px; }
+    body.mobile-preview .cat-header             { font-size: .88rem; padding: 7px 12px; margin-bottom: 11px; }
+
+    body.mobile-preview .checkbox-grid          { grid-template-columns: 1fr 1fr; gap: 6px; }
+    body.mobile-preview .cb-label               { padding: 11px 9px; gap: 7px; border-radius: 8px; }
+    body.mobile-preview .cb-label input[type=checkbox] { width: 18px; height: 18px; }
+
+    body.mobile-preview .sel-summary {
+      margin: 0;
+      padding: 9px 16px;
+      font-size: .88rem;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: center;
+    }
+
+    body.mobile-preview .btn-row {
+      margin: 0;
+      padding: 11px 14px;
+      gap: 8px;
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      justify-content: flex-start;
+    }
+    body.mobile-preview .btn          { flex: 1; min-width: 0; padding: 14px 8px; font-size: .95rem; border-radius: 9px; }
+    body.mobile-preview .btn-confirm  { flex: 2; }
+
+    body.mobile-preview .status-banner {
+      border-radius: 0;
+      padding: 20px 14px;
+      margin-bottom: 0;
+      border-left: none; border-right: none;
+    }
+    body.mobile-preview .status-banner .s-icon  { font-size: 2.2rem; margin-bottom: 7px; }
+    body.mobile-preview .status-banner .s-title { font-size: 1.45rem; }
+    body.mobile-preview .status-banner .s-sub   { font-size: .86rem; margin-top: 5px; }
+
+    body.mobile-preview .res-card {
+      border-radius: 0;
+      box-shadow: none;
+      padding: 14px 14px;
+      margin-bottom: 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    body.mobile-preview .res-card-title { font-size: .9rem; margin-bottom: 11px; }
+
+    body.mobile-preview .conflict-row  { padding: 9px 11px; font-size: .84rem; gap: 7px; flex-wrap: wrap; }
+    body.mobile-preview .cf-badge      { width: 19px; height: 19px; font-size: .62rem; }
+
+    body.mobile-preview .alt-intro     { font-size: .82rem; padding: 8px 11px; margin-bottom: 11px; }
+    body.mobile-preview .alt-item      { padding: 11px 13px; }
+    body.mobile-preview .alt-label     { font-size: .72rem; margin-bottom: 7px; }
+    body.mobile-preview .tag           { font-size: .8rem; padding: 4px 9px; }
+
+    body.mobile-preview .note-row      { padding: 10px 11px; gap: 8px; }
+    body.mobile-preview .note-name     { font-size: .79rem; }
+    body.mobile-preview .note-text     { font-size: .81rem; }
+
+    body.mobile-preview .cr-grid       { grid-template-columns: 1fr; gap: 8px; margin-bottom: 11px; }
+    body.mobile-preview .cr-box        { padding: 11px 13px; }
+    body.mobile-preview .cr-box-title  { font-size: .88rem; margin-bottom: 8px; }
+    body.mobile-preview .cr-items li   { font-size: .84rem; }
+    body.mobile-preview .global-note   { font-size: .81rem; padding: 10px 12px; }
+
+    /* ══════════════════════════════════════════════
+       NARROW DEVICE — real phone, no frame decoration
+       (body.mobile-preview without .wide-screen)
+    ══════════════════════════════════════════════ */
+    body.mobile-preview:not(.wide-screen) {
+      background: #eef2f7;
+    }
+    body.mobile-preview:not(.wide-screen) #appOuter {
+      padding: 0 0 80px;
+    }
+    body.mobile-preview:not(.wide-screen) #appShell {
+      max-width: 100%;
+      margin: 0;
+      height: auto;
+      overflow: visible;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    /* ── AUTH OVERLAY ── */
+    #authOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: linear-gradient(150deg, #1e3a8a 0%, #1e293b 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #authOverlay.hidden { display: none; }
+
+    .auth-card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 22px 26px;
+      text-align: center;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.45);
+    }
+    .auth-icon  { font-size: 2.8rem; line-height: 1; margin-bottom: 14px; }
+    .auth-title { font-size: 1.2rem; font-weight: 800; color: #1e293b; letter-spacing: -.02em; margin-bottom: 5px; }
+    .auth-sub   { font-size: .85rem; color: #64748b; margin-bottom: 24px; }
+
+    .auth-input {
+      width: 100%;
+      padding: 13px 16px;
+      font-size: 1.6rem;
+      font-family: inherit;
+      font-weight: 700;
+      letter-spacing: .5em;
+      text-align: center;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      outline: none;
+      color: #1e293b;
+      transition: border-color .15s;
+      margin-bottom: 12px;
+      display: block;
+    }
+    /* 인증번호 비활성화 - 추후 재활성화 가능 */
+    #authInput { display: none; }
+    .auth-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background .14s, transform .1s;
+      box-shadow: 0 4px 14px rgba(37,99,235,.35);
+    }
+    .auth-btn:hover  { background: #1d4ed8; }
+    .auth-btn:active { transform: scale(.98); }
+
+    /* ── 매장 선택 체크박스 그리드 (auth overlay 내부) ── */
+    .auth-store-groups    { margin-bottom: 14px; text-align: left; }
+    .auth-store-group + .auth-store-group { margin-top: 11px; }
+
+    .auth-store-group-title {
+      font-size: .72rem;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: .07em;
+      text-align: center;
+      padding-bottom: 5px;
+      border-bottom: 1.5px solid #e2e8f0;
+      margin-bottom: 7px;
+    }
+    .auth-store-cbgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+    .auth-store-cbgrid .cb-label {
+      font-size: .78rem;
+      padding: 7px 8px;
+      gap: 6px;
+      border-radius: 7px;
+    }
+    .auth-store-cbgrid .cb-label input[type=checkbox] {
+      width: 15px;
+      height: 15px;
+      accent-color: #2563eb;
+    }
+
+    .auth-error {
+      margin-top: 13px;
+      font-size: .84rem;
+      color: #be123c;
+      font-weight: 600;
+      min-height: 1.3em;
+      transition: opacity .2s;
+    }
+
+    .store-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .store-badge {
+      display: inline-block;
+      font-size: .8rem;
+      font-weight: 600;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: 20px;
+      padding: 4px 14px;
+      color: rgba(255,255,255,.92);
+    }
+    .btn-back {
+      font-size: .75rem;
+      font-weight: 600;
+      font-family: inherit;
+      background: rgba(255,255,255,.1);
+      color: rgba(255,255,255,.75);
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 20px;
+      padding: 4px 12px;
+      cursor: pointer;
+      transition: background .14s, color .14s;
+      line-height: 1.5;
+    }
+    .btn-back:hover { background: rgba(255,255,255,.22); color: #fff; }
+    body.mobile-preview .store-area  { margin-top: 7px; gap: 6px; }
+    body.mobile-preview .store-badge { font-size: .75rem; padding: 3px 11px; }
+    body.mobile-preview .btn-back    { font-size: .72rem; padding: 3px 10px; }
+
+    /* ── PC RESPONSIVE (only in PC view) ── */
+    @media (max-width: 640px) {
+      body:not(.mobile-preview) #appOuter { padding: 12px 10px 50px; }
+      body:not(.mobile-preview) .app-header h1 { font-size: 1.55rem; }
+      body:not(.mobile-preview) .checkbox-grid { grid-template-columns: 1fr 1fr; }
+      body:not(.mobile-preview) .status-banner .s-title { font-size: 1.65rem; }
+      body:not(.mobile-preview) .btn { padding: 13px 28px; font-size: 1rem; }
+      body:not(.mobile-preview) .res-card { padding: 18px 16px; }
+      body:not(.mobile-preview) .cr-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 400px) {
+      body:not(.mobile-preview) .checkbox-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── 인증 오버레이 ── -->
+<div id="authOverlay">
+  <div class="auth-card">
+    <div class="auth-icon"></div>
+    <h2 class="auth-title">신세계 복합결제 도우미</h2>
+    <p class="auth-sub">현재 계신 매장을 선택하세요</p>
+    <div id="storeGrid" class="auth-store-groups"></div>
+    <input type="password" id="authInput" class="auth-input"
+           maxlength="4" inputmode="numeric" pattern="[0-9]*"
+           autocomplete="off" placeholder="·  ·  ·  ·">
+    <button class="auth-btn" onclick="submitAuth()">확&nbsp;&nbsp;인</button>
+    <p class="auth-error" id="authError"></p>
+  </div>
+</div>
+
+<div class="view-toggle-bar">
+  <span class="toggle-label">화면 모드</span>
+  <div class="toggle-btns">
+    <button class="view-btn active" id="btnPC"     onclick="switchView('pc')">🖥 PC</button>
+    <button class="view-btn"        id="btnMobile" onclick="switchView('mobile')">📱 모바일</button>
+  </div>
+</div>
+
+<div id="appOuter">
+  <div id="appShell">
+
+    <header class="app-header">
+      <h1>신세계 복합결제 도우미</h1>
+      <p>현재 결제정책은 26.06.30일자 기준이며, 추후 정책 변경에 따라 결과가 틀릴 수 있습니다</p>
+      <p>문의사항 있을 시 점포 POS운영으로 연락 바랍니다</p>
+      <div id="storeArea" class="store-area" style="display:none">
+        <span id="storeBadge" class="store-badge"></span>
+        <button class="btn-back" onclick="goBack()">← 매장 변경</button>
+      </div>
+    </header>
+
+    <div class="selection-card" id="selectionCard"></div>
+
+    <p class="sel-summary" id="selSummary"><span class="sel-count" id="selCount">0</span>개 선택됨</p>
+
+    <div class="btn-row">
+      <button class="btn btn-reset"   onclick="doReset()">초기화</button>
+      <button class="btn btn-confirm" onclick="doConfirm()">확&nbsp;&nbsp;인</button>
+    </div>
+
+    <div id="resultArea"></div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ──────────────────────────────────────────────
+   데이터
+────────────────────────────────────────────── */
+const DATA = {
+  "items": [
+    { "id": "coupon1", "name": "신백리워드 쿠폰",    "category": "쿠폰", "note": null },
+    { "id": "coupon4", "name": "제휴카드 쿠폰",          "category": "쿠폰", "note": null },
+    { "id": "coupon_etc", "name": "기타 (QR/지류)", "category": "쿠폰", "note": "서비스권으로 처리됩니다, 사용증빙으로 전달할 별도 영수증을 출력해서 보관해주세요" },
+    { "id": "pay1",  "name": "현금",               "category": "결제수단", "note": null, "cashReceiptEligible": true },
+    { "id": "pay2",  "name": "제휴카드",            "category": "결제수단", "note": null, "cashReceiptEligible": false },
+    { "id": "pay3",  "name": "타사카드",            "category": "결제수단", "note": null, "cashReceiptEligible": false },
+    { "id": "pay4",  "name": "일반 상품권",         "category": "결제수단", "note": null, "cashReceiptEligible": true },
+    { "id": "pay5",  "name": "증정 상품권 (자사)",  "category": "결제수단", "note": null, "cashReceiptEligible": false },
+    { "id": "pay6",  "name": "증정 상품권 (타사)",  "category": "결제수단", "note": "상품권 금액을 제한 금액에 대해 세일리지/에누리 적용됩니다. 현금영수증 처리가 안될 시 고객님께서 상품권을 증정 받으신 점포를 확인해주세요.", "cashReceiptEligible": true },
+    { "id": "pay10", "name": "국민관광상품권",      "category": "결제수단", "note": "상품권 금액을 제한 금액에 대해 세일리지/에누리 적용됩니다", "cashReceiptEligible": true },
+    { "id": "pay7",  "name": "SSG머니, 카카오머니",            "category": "결제수단", "note": null, "cashReceiptEligible": true },
+    { "id": "pay8",  "name": "신백리워드",          "category": "결제수단", "note": null, "cashReceiptEligible": false },
+    { "id": "pay9",  "name": "신세계 포인트",        "category": "결제수단", "note": null, "cashReceiptEligible": false },
+    { "id": "sale1", "name": "S 세일리지 (VIP)",            "category": "세일리지/에누리", "note": "리워드쿠폰 사용시 쿠폰 사용후 금액에 대해 적용됩니다. 세일리지 잔여한도를 초과하는 금액 결제 시 적용 불가합니다." },
+    { "id": "sale2", "name": "프로모션 세일리지",    "category": "세일리지/에누리", "note": "세일리지 잔여한도를 초과하는 금액 결제 시 적용 불가합니다." },
+    { "id": "sale3", "name": "유니버스 클럽",         "category": "세일리지/에누리", "note": "세일리지 잔여한도를 초과하는 금액 결제 시 적용 불가합니다." },
+    { "id": "sale4", "name": "직원 할인",             "category": "세일리지/에누리", "note": null },
+    { "id": "sale5", "name": "수기 에누리",           "category": "세일리지/에누리", "note": "상품등록 화면에서 우선 적용이 필요합니다." }
+  ],
+  "conflictPairs": [
+    ["coupon1","coupon_etc"],["coupon1","pay1"],["coupon1","pay3"],
+    ["coupon1","pay4"],["coupon1","pay5"],["coupon1","pay6"],["coupon1","pay7"],
+    ["coupon1","pay8"],["coupon1","pay9"],["coupon1","pay10"],
+    ["coupon_etc","coupon4"],["coupon_etc","sale2"],["coupon_etc","sale5"],
+    ["coupon4","pay1"],["coupon4","pay3"],["coupon4","pay4"],["coupon4","pay5"],
+    ["coupon4","pay6"],["coupon4","pay7"],["coupon4","pay8"],["coupon4","pay9"],["coupon4","pay10"],
+    ["coupon4","sale1"],["coupon4","sale2"],["coupon4","sale3"],["coupon4","sale4"],["coupon4","sale5"],
+    ["pay1","sale2"],
+    ["pay3","sale1"],["pay3","sale2"],
+    ["pay4","sale1"],["pay4","sale2"],
+    ["pay5","sale1"],["pay5","sale2"],["pay5","sale3"],["pay5","sale5"],
+    ["pay6","sale1"],["pay6","sale2"],["pay6","sale5"],
+    ["pay7","sale2"],["pay7","sale5"],
+    ["pay8","sale2"],
+    ["pay9","sale2"],["pay9","sale5"],
+    ["pay10","sale1"],["pay10","sale2"],["pay10","sale5"],
+    ["sale1","sale2"],["sale1","sale3"],["sale1","sale4"],
+    ["sale2","sale3"],["sale2","sale4"],
+    ["sale3","sale4"],
+    ["sale4","sale5"]
+  ],
+  "accessCode": "1156",
+  "sameItemAlwaysConflicts": true,
+  "globalNotes": [
+    "현금 · 일반 상품권 · SSG머니, 카카오머니 · 증정 상품권(타사) · 국민관광상품권으로 결제한 금액의 합계까지만 발급 가능합니다."
+  ],
+  "cautionRules": [
+    { "items": ["coupon1", "coupon4"], "note": "[결제 순서] 결제가격 입력 → 제휴카드를 먼저 꽂고, 제휴카드 쿠폰 적용 → 할부 안내 창에서 '취소'를 누른 뒤 → 신백리워드 바코드 센싱 및 리워드 쿠폰 적용" },
+    { "items": ["coupon1", "sale4"], "note": "[최대 할인율 적용방법] 직원할인 선 적용 후 리워드 쿠폰 적용" }
+  ],
+  "failureHints": [
+    { "item": "coupon1", "note": "전액 본인 명의의 제휴카드로 결제 시 사용 가능합니다. (세일리지 사용가능)" },
+    { "item": "coupon4", "note": "전액 본인 명의의 제휴카드로 결제 시 사용 가능합니다. (세일리지 사용불가)" },
+    { "item": "sale1", "note": "현금 또는 전액 본인 명의의 제휴카드로 결제 시 사용 가능합니다." },
+    { "item": "sale2", "note": "전액 본인 명의의 제휴카드로 결제 시 사용 가능합니다." }
+  ],
+  "storeGroups": {
+    "별도법인": ["대구점","광주점","Art&Science","천안아산점"],
+    "일반점포": ["강남점","본점","센텀시티점","사우스시티","타임스퀘어점","의정부점","하남점","김해점","마산점"]
+  },
+  "giftCardHintTemplate": {
+    "standalone": {
+      "own":   "신세계 {store}에서 발행된 증정상품권",
+      "other": "신세계 {store} 이외 점포 및 이마트에서 발행된 증정상품권"
+    },
+    "shinsegae": {
+      "own":   "신세계 대구점 / 광주점 / Art&Science / 천안아산점이 아닌 점포에서 발행된 증정상품권",
+      "other": "신세계 대구점 / 광주점 / Art&Science / 천안아산점 및 이마트에서 발행된 증정상품권"
+    }
+  }
+};
+
+/* ──────────────────────────────────────────────
+   기초 데이터 구조
+────────────────────────────────────────────── */
+let currentStore = null;
+
+const itemById = Object.fromEntries(DATA.items.map(i => [i.id, i]));
+
+const conflictSet = new Set();
+DATA.conflictPairs.forEach(([a, b]) => {
+  conflictSet.add(a + ',' + b);
+  conflictSet.add(b + ',' + a);
+});
+
+const CAT_ICONS = { '쿠폰': '🎫', '결제수단': '💳', '세일리지/에누리': '🏷️' };
+const CAT_SLUG  = { '쿠폰': 'coupon', '결제수단': 'pay', '세일리지/에누리': 'sale' };
+const categories = [...new Set(DATA.items.map(i => i.category))];
+
+/* ──────────────────────────────────────────────
+   증정상품권 안내 문구 (매장별 동적 생성)
+────────────────────────────────────────────── */
+function getGiftCardHints() {
+  if (!currentStore) return [];
+  const groups = DATA.storeGroups;
+  const tmpl   = DATA.giftCardHintTemplate;
+  if (groups['별도법인'].includes(currentStore)) {
+    const t = tmpl.standalone;
+    return [
+      '※ 증정 상품권 (자사) : ' + t.own.replace('{store}', currentStore),
+      '※ 증정 상품권 (타사) : ' + t.other.replace('{store}', currentStore)
+    ];
+  }
+  if (groups['일반점포'].includes(currentStore)) {
+    const t = tmpl.shinsegae;
+    return [
+      '※ 증정 상품권 (자사) : ' + t.own,
+      '※ 증정 상품권 (타사) : ' + t.other
+    ];
+  }
+  return [];
+}
+
+/* ──────────────────────────────────────────────
+   체크박스 렌더링
+────────────────────────────────────────────── */
+function renderCheckboxes() {
+  const card = document.getElementById('selectionCard');
+  card.innerHTML = categories.map(cat => {
+    const items = DATA.items.filter(i => i.category === cat);
+    const icon  = CAT_ICONS[cat] || '📋';
+    const boxes = items.map(item => `
+      <label class="cb-label" id="lbl-${item.id}">
+        <input type="checkbox" value="${item.id}" onchange="onCheck()">
+        ${escHtml(item.name)}
+      </label>`).join('');
+    const hints = cat === '결제수단' ? getGiftCardHints() : [];
+    const hintsHtml = hints.length
+      ? `<div class="cat-hints">${hints.map(h => `<span class="cat-hint-line">${escHtml(h)}</span>`).join('')}</div>`
+      : '';
+    return `<div class="cat-block cat-${CAT_SLUG[cat] || 'default'}">
+      <div class="cat-header"><span>${icon}</span> ${escHtml(cat)}</div>
+      <div class="checkbox-grid">${boxes}</div>
+      ${hintsHtml}
+    </div>`;
+  }).join('');
+}
+
+function onCheck() {
+  const n = getSelected().length;
+  document.getElementById('selCount').textContent = n;
+  document.querySelectorAll('#selectionCard .cb-label').forEach(lbl => {
+    lbl.classList.toggle('checked', lbl.querySelector('input').checked);
+  });
+  document.getElementById('resultArea').innerHTML = '';
+}
+
+function getSelected() {
+  return [...document.querySelectorAll('#selectionCard input[type=checkbox]:checked')].map(c => c.value);
+}
+
+/* ──────────────────────────────────────────────
+   초기화 버튼
+────────────────────────────────────────────── */
+function doReset() {
+  document.querySelectorAll('#selectionCard input[type=checkbox]').forEach(c => c.checked = false);
+  document.querySelectorAll('#selectionCard .cb-label').forEach(l => l.classList.remove('checked'));
+  document.getElementById('selCount').textContent = '0';
+  document.getElementById('resultArea').innerHTML = '';
+}
+
+/* ──────────────────────────────────────────────
+   충돌 감지
+────────────────────────────────────────────── */
+function conflicts(a, b) { return conflictSet.has(a + ',' + b); }
+
+function findConflicts(ids) {
+  const result = [];
+  for (let i = 0; i < ids.length; i++)
+    for (let j = i + 1; j < ids.length; j++)
+      if (conflicts(ids[i], ids[j])) result.push([ids[i], ids[j]]);
+  return result;
+}
+
+function isCompatible(ids) {
+  for (let i = 0; i < ids.length; i++)
+    for (let j = i + 1; j < ids.length; j++)
+      if (conflicts(ids[i], ids[j])) return false;
+  return true;
+}
+
+/* ──────────────────────────────────────────────
+   최대 크기 호환 부분조합 탐색
+────────────────────────────────────────────── */
+function combinations(arr, k) {
+  const result = [];
+  function bt(start, cur) {
+    if (cur.length === k) { result.push([...cur]); return; }
+    const need = k - cur.length;
+    for (let i = start; i <= arr.length - need; i++) {
+      cur.push(arr[i]); bt(i + 1, cur); cur.pop();
+    }
+  }
+  bt(0, []);
+  return result;
+}
+
+function findBestCompatibleSets(selected) {
+  for (let size = selected.length; size >= 1; size--) {
+    const valid = combinations(selected, size).filter(isCompatible);
+    if (valid.length) return valid;
+  }
+  return [];
+}
+
+function findBestCompatibleSetsWithCategory(selected, mustCategory) {
+  const hasCategory = selected.some(id => itemById[id] && itemById[id].category === mustCategory);
+  if (!hasCategory) return [];
+  for (let size = selected.length; size >= 1; size--) {
+    const valid = combinations(selected, size)
+      .filter(isCompatible)
+      .filter(set => set.some(id => itemById[id].category === mustCategory));
+    if (valid.length) return valid;
+  }
+  return [];
+}
+
+function findBestPurePaymentSets(selected) {
+  const payOnly = selected.filter(id => itemById[id] && itemById[id].category === '결제수단');
+  for (let size = payOnly.length; size >= 1; size--) {
+    const valid = combinations(payOnly, size).filter(isCompatible);
+    if (valid.length) return valid;
+  }
+  return [];
+}
+
+function setsEqual(a, b) {
+  if (a.length !== b.length) return false;
+  const sa = [...a].sort(), sb = [...b].sort();
+  return sa.every((v, i) => v === sb[i]);
+}
+
+/* ──────────────────────────────────────────────
+   확인 버튼
+────────────────────────────────────────────── */
+function doConfirm() {
+  const selected = getSelected();
+  const hasPayMethod = selected.some(id => itemById[id] && itemById[id].category === '결제수단');
+  if (!hasPayMethod) { showToast('최소 하나 이상의 결제수단을 선택해주세요.'); return; }
+  if (selected.length < 2) { showToast('2개 이상 항목을 선택해 주세요.'); return; }
+
+  const cfList = findConflicts(selected);
+  let html = '';
+
+  const matchedHints = cfList.length > 0
+    ? DATA.failureHints.filter(h => selected.includes(h.item))
+    : [];
+  const noted = selected.map(id => itemById[id]).filter(i => i.note);
+
+  let hintHtml = '';
+  if (matchedHints.length > 0) {
+    hintHtml += `<div class="res-card">
+      <div class="res-card-title">❌ 결제불가 사유</div>
+      <div class="note-list">`;
+    matchedHints.forEach(h => {
+      const hintItem = itemById[h.item];
+      const label = hintItem ? hintItem.name : h.item;
+      hintHtml += `<div class="note-row">
+        <span class="note-name">[${escHtml(label)}]</span>
+        <span class="note-text">${escHtml(h.note)}</span>
+      </div>`;
+    });
+    hintHtml += `</div></div>`;
+  }
+
+  let noticeHtml = '';
+  if (noted.length > 0) {
+    noticeHtml += `<div class="res-card">
+      <div class="res-card-title">📋 유의사항</div>
+      <div class="note-list">`;
+    noted.forEach(item => {
+      noticeHtml += `<div class="note-row">
+        <span class="note-name">[${escHtml(item.name)}]</span>
+        <span class="note-text">${escHtml(item.note)}</span>
+      </div>`;
+    });
+    noticeHtml += `</div></div>`;
+  }
+
+  if (cfList.length === 0) {
+    const matchedCautions = DATA.cautionRules.filter(rule =>
+      rule.items.every(id => selected.includes(id))
+    );
+    if (matchedCautions.length > 0) {
+      html += `<div class="status-banner banner-caution">
+        <div class="s-icon">⚠️</div>
+        <div class="s-title">결제 가능 (유의사항 있음)</div>
+        <div class="s-sub">결제 전 아래 유의사항을 확인하세요.</div>
+      </div>`;
+      html += `<div class="res-card">
+        <div class="res-card-title">⚠️ 유의사항</div>
+        <div class="note-list">`;
+      matchedCautions.forEach(rule => {
+        html += `<div class="note-row"><span class="note-text">${escHtml(rule.note)}</span></div>`;
+      });
+      html += `</div></div>`;
+    } else {
+      html += `<div class="status-banner banner-ok">
+        <div class="s-icon">✅</div>
+        <div class="s-title">결제 가능</div>
+        <div class="s-sub">선택하신 조합으로 결제하실 수 있습니다.</div>
+      </div>`;
+    }
+    html += noticeHtml;
+  } else {
+    html += `<div class="status-banner banner-fail">
+      <div class="s-icon">❌</div>
+      <div class="s-title">결제 불가</div>
+      <div class="s-sub">아래의 항목들이 서로 충돌합니다. 대안 조합을 확인하세요.</div>
+    </div>`;
+
+    const conflictCount = {};
+    cfList.forEach(([a, b]) => {
+      conflictCount[a] = (conflictCount[a] || 0) + 1;
+      conflictCount[b] = (conflictCount[b] || 0) + 1;
+    });
+    const conflictGroups = new Map();
+    cfList.forEach(([a, b]) => {
+      const key = (conflictCount[b] || 0) > (conflictCount[a] || 0) ? b : a;
+      const val = key === a ? b : a;
+      if (!conflictGroups.has(key)) conflictGroups.set(key, []);
+      conflictGroups.get(key).push(val);
+    });
+
+    html += `<div class="res-card">
+      <div class="res-card-title">⚡ 충돌 항목 (${conflictGroups.size}건)</div>
+      <div class="conflict-list">`;
+    conflictGroups.forEach((opponents, item) => {
+      html += `<div class="conflict-row">
+        <span class="cf-badge">✕</span>
+        <span>${escHtml(itemById[item].name)}</span>
+        <span class="cf-vs">↔</span>
+        <span>${opponents.map(id => escHtml(itemById[id].name)).join(', ')}</span>
+      </div>`;
+    });
+    html += `</div></div>`;
+    html += hintHtml;
+    html += noticeHtml;
+
+    let alts = findBestPurePaymentSets(selected);
+    alts = alts.filter(combo => combo.some(id => itemById[id] && itemById[id].category === '결제수단'));
+    const couponAlts = findBestCompatibleSetsWithCategory(selected, '쿠폰');
+    let couponNew  = couponAlts.filter(combo => combo.some(id => itemById[id] && itemById[id].category === '결제수단'));
+    const saleAlts    = findBestCompatibleSetsWithCategory(selected, '세일리지/에누리');
+    let saleDeduped = saleAlts.filter(ss => !couponAlts.some(cs => setsEqual(ss, cs)));
+    saleDeduped = saleDeduped.filter(combo => combo.some(id => itemById[id] && itemById[id].category === '결제수단'));
+
+    if (alts.length > 0 || couponNew.length > 0 || saleDeduped.length > 0) {
+      html += `<div class="res-card">`;
+
+      if (couponNew.length > 0) {
+        const couponDisplay = couponNew.slice(0, 8);
+        html += `<div class="res-card-title" style="margin-top:18px">🎫 쿠폰 사용 가능 조합</div>
+          <div class="alt-list">`;
+        couponDisplay.forEach((alt) => {
+          html += `<div class="alt-item">
+            <div class="tag-row">${alt.map(id => `<span class="tag">${escHtml(itemById[id].name)}</span>`).join('')}</div>
+          </div>`;
+        });
+        if (couponNew.length > 8) html += `<div class="more-alts">… 외 ${couponNew.length - 8}개 조합 더 있음</div>`;
+        html += `</div>`;
+      }
+
+      if (saleDeduped.length > 0) {
+        const saleDisplay = saleDeduped.slice(0, 8);
+        html += `<div class="res-card-title" style="margin-top:18px">🏷️ 세일리지/에누리 사용 가능 조합</div>
+          <div class="alt-list">`;
+        saleDisplay.forEach((alt) => {
+          html += `<div class="alt-item">
+            <div class="tag-row">${alt.map(id => `<span class="tag">${escHtml(itemById[id].name)}</span>`).join('')}</div>
+          </div>`;
+        });
+        if (saleDeduped.length > 8) html += `<div class="more-alts">… 외 ${saleDeduped.length - 8}개 조합 더 있음</div>`;
+        html += `</div>`;
+      }
+
+
+      if (alts.length > 0) {
+        const maxSize = alts[0].length;
+        const display = alts.slice(0, 8);
+        html += `<div class="res-card-title" style="margin-top:18px">✨ 서로 사용 가능한 조합</div>
+          <div class="alt-list">`;
+        display.forEach((alt) => {
+          html += `<div class="alt-item">
+            <div class="tag-row">${alt.map(id => `<span class="tag">${escHtml(itemById[id].name)}</span>`).join('')}</div>
+          </div>`;
+        });
+        if (alts.length > 8) html += `<div class="more-alts">… 외 ${alts.length - 8}개 조합 더 있음</div>`;
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+    }
+
+  }
+
+  const payItems = selected.map(id => itemById[id]).filter(i => i.category === '결제수단');
+  if (cfList.length === 0 && payItems.length > 0) {
+    const eligible   = payItems.filter(i => i.cashReceiptEligible === true);
+    const ineligible = payItems.filter(i => i.cashReceiptEligible === false);
+    html += `<div class="res-card"><div class="res-card-title">🧾 현금영수증 발급 안내</div>`;
+
+    if (ineligible.length === 0 && eligible.length > 0) {
+      // 1) 전액 가능
+      html += `<div class="cr-status cr-ok">
+        <div class="cr-s-icon">✅</div>
+        <div class="cr-s-title">현금영수증 발급 가능</div>
+        <div class="cr-s-tags">${eligible.map(i => `<span class="cr-s-tag">${escHtml(i.name)}</span>`).join('')}</div>
+      </div>`;
+    } else if (eligible.length > 0 && ineligible.length > 0) {
+      // 2) 혼합
+      html += `<div class="cr-grid">
+        <div class="cr-box yes">
+          <div class="cr-box-title">✅ 발급 가능</div>
+          <ul class="cr-items">`;
+      eligible.forEach(i => { html += `<li>${escHtml(i.name)}</li>`; });
+      html += `</ul></div>
+        <div class="cr-box no">
+          <div class="cr-box-title">❌ 발급 불가</div>
+          <ul class="cr-items">`;
+      ineligible.forEach(i => { html += `<li>${escHtml(i.name)}</li>`; });
+      html += `</ul></div></div>`;
+      DATA.globalNotes.forEach(note => { html += `<div class="global-note">ℹ️ ${escHtml(note)}</div>`; });
+    } else if (eligible.length === 0 && ineligible.length > 0) {
+      // 3) 전액 불가
+      html += `<div class="cr-status cr-fail">
+        <div class="cr-s-icon">❌</div>
+        <div class="cr-s-title">현금영수증 발행 불가</div>
+        <div class="cr-s-tags">${ineligible.map(i => `<span class="cr-s-tag">${escHtml(i.name)}</span>`).join('')}</div>
+      </div>`;
+      DATA.globalNotes.forEach(note => { html += `<div class="global-note">ℹ️ ${escHtml(note)}</div>`; });
+    }
+    html += `</div>`;
+  }
+
+  const area = document.getElementById('resultArea');
+  area.innerHTML = html;
+  area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ──────────────────────────────────────────────
+   유틸
+────────────────────────────────────────────── */
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ──────────────────────────────────────────────
+   글씨 자동 축소 (줄바꿈 방지)
+────────────────────────────────────────────── */
+function fitLabelText() {
+  document.querySelectorAll('.cb-label').forEach(label => {
+    label.style.fontSize = '';
+    let size = parseFloat(getComputedStyle(label).fontSize);
+    const padV = parseFloat(getComputedStyle(label).paddingTop)
+               + parseFloat(getComputedStyle(label).paddingBottom);
+    while (size > 9) {
+      const lh = parseFloat(getComputedStyle(label).lineHeight) || size * 1.5;
+      if (label.scrollHeight <= lh + padV + 2) break;
+      size -= 0.5;
+      label.style.fontSize = size + 'px';
+    }
+  });
+}
+
+/* ──────────────────────────────────────────────
+   PC / 모바일 뷰 전환
+────────────────────────────────────────────── */
+function updateWideScreenClass() {
+  document.body.classList.toggle('wide-screen', window.innerWidth >= 768);
+}
+
+function switchView(mode) {
+  const isMobile = mode === 'mobile';
+  document.body.classList.toggle('mobile-preview', isMobile);
+  document.getElementById('btnPC').classList.toggle('active', !isMobile);
+  document.getElementById('btnMobile').classList.toggle('active', isMobile);
+  requestAnimationFrame(fitLabelText);
+}
+
+/* ──────────────────────────────────────────────
+   매장 선택 체크박스 그리드 초기화
+────────────────────────────────────────────── */
+function renderStoreCheckboxes() {
+  const container = document.getElementById('storeGrid');
+  const order = ['일반점포', '별도법인'];
+  container.innerHTML = order.map(group => {
+    const stores = DATA.storeGroups[group] || [];
+    const boxes = stores.map(store => `
+      <label class="cb-label">
+        <input type="checkbox" value="${escHtml(store)}" onchange="onStoreCheck(this)">
+        ${escHtml(store)}
+      </label>`).join('');
+    return `<div class="auth-store-group">
+      <div class="auth-store-group-title">${escHtml(group)}</div>
+      <div class="auth-store-cbgrid">${boxes}</div>
+    </div>`;
+  }).join('');
+}
+
+function onStoreCheck(cb) {
+  document.querySelectorAll('#storeGrid input[type=checkbox]').forEach(el => {
+    el.checked = (el === cb);
+  });
+  document.querySelectorAll('#storeGrid .cb-label').forEach(lbl => {
+    lbl.classList.toggle('checked', lbl.querySelector('input').checked);
+  });
+}
+
+/* ──────────────────────────────────────────────
+   인증
+────────────────────────────────────────────── */
+function submitAuth() {
+  const input   = document.getElementById('authInput');
+  const errEl   = document.getElementById('authError');
+  const storeCb = document.querySelector('#storeGrid input[type=checkbox]:checked');
+
+  if (!storeCb) {
+    errEl.textContent = '매장을 선택해 주세요.';
+    setTimeout(() => { errEl.textContent = ''; }, 2500);
+    return;
+  }
+  // 인증번호 비활성화 - 추후 재활성화 가능
+  // if (input.value === String(DATA.accessCode)) {
+  currentStore = storeCb.value;
+  document.getElementById('authOverlay').classList.add('hidden');
+  document.getElementById('storeBadge').textContent = '현재 매장: 신세계 ' + currentStore;
+  document.getElementById('storeArea').style.display = '';
+  input.value = '';
+  renderCheckboxes();
+  requestAnimationFrame(fitLabelText);
+  // } else {
+  //   errEl.textContent = '인증번호가 올바르지 않습니다.';
+  //   input.value = '';
+  //   input.focus();
+  //   setTimeout(() => { errEl.textContent = ''; }, 2500);
+  // }
+}
+document.getElementById('authInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitAuth();
+});
+
+function goBack() {
+  document.getElementById('authInput').value = '';
+  document.getElementById('authError').textContent = '';
+  document.getElementById('authOverlay').classList.remove('hidden');
+}
+
+/* ── 시작 ── */
+renderStoreCheckboxes();
+renderCheckboxes();
+updateWideScreenClass();
+
+// 화면 폭 기반 초기 뷰 자동 결정
+switchView(window.innerWidth < 768 ? 'mobile' : 'pc');
+fitLabelText();
+
+window.addEventListener('resize', () => {
+  updateWideScreenClass();
+  fitLabelText();
+});
+new ResizeObserver(() => fitLabelText()).observe(document.getElementById('selectionCard'));
+</script>
+</body>
+</html>
