@@ -1019,6 +1019,7 @@ function doConfirm() {
       conflictGroups.get(key).push(val);
     });
 
+    html += hintHtml;
     html += `<div class="res-card">
       <div class="res-card-title">⚡ 충돌 항목 (${conflictGroups.size}건)</div>
       <div class="conflict-list">`;
@@ -1031,7 +1032,6 @@ function doConfirm() {
       </div>`;
     });
     html += `</div></div>`;
-    html += hintHtml;
     html += noticeHtml;
 
     let alts = findBestPurePaymentSets(selected);
