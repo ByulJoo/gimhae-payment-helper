@@ -597,24 +597,9 @@
       line-height: 1.5;
     }
     .btn-back:hover { background: rgba(255,255,255,.22); color: #fff; }
-    .btn-feedback {
-      font-size: .75rem;
-      font-weight: 600;
-      font-family: inherit;
-      background: transparent;
-      color: rgba(255,255,255,.8);
-      border: 1px solid rgba(255,255,255,.4);
-      border-radius: 20px;
-      padding: 4px 14px;
-      cursor: pointer;
-      transition: background .14s, color .14s, border-color .14s;
-      line-height: 1.5;
-    }
-    .btn-feedback:hover { background: rgba(255,255,255,.15); color: #fff; border-color: rgba(255,255,255,.65); }
     body.mobile-preview .store-area  { margin-top: 7px; gap: 6px; }
     body.mobile-preview .store-badge { font-size: .75rem; padding: 3px 11px; }
     body.mobile-preview .btn-back    { font-size: .72rem; padding: 3px 10px; }
-    body.mobile-preview .btn-feedback { font-size: .72rem; padding: 3px 10px; }
 
     /* ── 의견 보내기 구글폼 모달 ── */
     #feedbackModalOverlay {
@@ -734,13 +719,12 @@
 
     <header class="app-header">
       <h1>신세계 복합결제 도우미</h1>
-      <p>결제정책은 26.06.30자 기준이며, 추후 정책에 따라 결과가 다를 수 있습니다</p>
-      <p>문의사항 있을 시 점포 POS운영으로 연락 바랍니다</p>
+      <p>결제정책은 26.06.30자 기준이며</p>
+      <p>추후 결제정책 변경에 따라 결과가 다를 수 있습니다</p>
+      <p>특이사항 발생 시 점포 POS운영으로 연락 바랍니다</p>
       <div id="storeArea" class="store-area" style="display:none">
         <span id="storeBadge" class="store-badge"></span>
         <button class="btn-back" onclick="goBack()">← 매장 변경</button>
-        <div style="flex-basis:100%;height:0"></div>
-        <button class="btn-feedback" onclick="openFeedbackModal()">💬 의견 보내기</button>
       </div>
     </header>
 
