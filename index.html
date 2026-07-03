@@ -616,6 +616,79 @@
     body.mobile-preview .btn-back    { font-size: .72rem; padding: 3px 10px; }
     body.mobile-preview .btn-feedback { font-size: .72rem; padding: 3px 10px; }
 
+    /* ── 의견 보내기 구글폼 모달 ── */
+    #feedbackModalOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(15,23,42,.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #feedbackModalOverlay.hidden { display: none; }
+
+    .feedback-modal-box {
+      background: white;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 85vh;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,.45);
+      display: flex;
+      flex-direction: column;
+    }
+    .feedback-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: white;
+      flex-shrink: 0;
+    }
+    .feedback-modal-title { font-size: 1rem; font-weight: 700; }
+    .feedback-modal-close {
+      width: 28px; height: 28px;
+      font-size: .9rem;
+      font-family: inherit;
+      background: rgba(255,255,255,.15);
+      color: white;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+      transition: background .14s;
+      flex-shrink: 0;
+    }
+    .feedback-modal-close:hover { background: rgba(255,255,255,.3); }
+    .feedback-modal-body { flex: 1; overflow: hidden; background: #f8fafc; }
+    .feedback-modal-body iframe {
+      width: 100%; height: 100%; min-height: 62vh;
+      border: none; display: block;
+    }
+    body.mobile-preview .feedback-modal-box { max-width: 320px; }
+    body.mobile-preview .feedback-modal-body iframe { min-height: 56vh; }
+
+    /* ── 결과 화면 내 의견 남기기 섹션 ── */
+    .feedback-cta-card {
+      text-align: center;
+      background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+      border: 1.5px solid #bfdbfe;
+    }
+    .feedback-cta-text {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      margin-bottom: 14px;
+    }
+    .feedback-cta-btn { min-width: 160px; }
+    body.mobile-preview .feedback-cta-card { padding: 16px 14px; }
+    body.mobile-preview .feedback-cta-text { font-size: .92rem; margin-bottom: 11px; }
+
     /* ── PC RESPONSIVE (only in PC view) ── */
     @media (max-width: 640px) {
       body:not(.mobile-preview) #appOuter { padding: 12px 10px 50px; }
@@ -667,7 +740,7 @@
         <span id="storeBadge" class="store-badge"></span>
         <button class="btn-back" onclick="goBack()">← 매장 변경</button>
         <div style="flex-basis:100%;height:0"></div>
-        <button class="btn-feedback" onclick="window.open(FEEDBACK_FORM_URL, '_blank')">💬 의견 보내기</button>
+        <button class="btn-feedback" onclick="openFeedbackModal()">💬 의견 보내기</button>
       </div>
     </header>
 
@@ -687,8 +760,44 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- ── 의견 보내기 구글폼 모달 ── -->
+<div id="feedbackModalOverlay" class="hidden">
+  <div class="feedback-modal-box">
+    <div class="feedback-modal-header">
+      <span class="feedback-modal-title">💬 의견 보내기</span>
+      <button class="feedback-modal-close" onclick="closeFeedbackModal()" aria-label="닫기">✕</button>
+    </div>
+    <div class="feedback-modal-body">
+      <iframe id="feedbackModalIframe" title="의견 보내기" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+
 <script>
 const FEEDBACK_FORM_URL = "https://forms.gle/zBbGCjJYac8qm2iz5";
+
+/* ──────────────────────────────────────────────
+   의견 보내기 (구글폼 모달)
+────────────────────────────────────────────── */
+function buildFeedbackEmbedUrl(url) {
+  try {
+    const u = new URL(url);
+    u.searchParams.set('embedded', 'true');
+    return u.toString();
+  } catch (e) {
+    return url;
+  }
+}
+
+function openFeedbackModal() {
+  const iframe = document.getElementById('feedbackModalIframe');
+  if (!iframe.src) iframe.src = buildFeedbackEmbedUrl(FEEDBACK_FORM_URL);
+  document.getElementById('feedbackModalOverlay').classList.remove('hidden');
+}
+
+function closeFeedbackModal() {
+  document.getElementById('feedbackModalOverlay').classList.add('hidden');
+}
 
 /* ──────────────────────────────────────────────
    데이터
@@ -1129,6 +1238,11 @@ function doConfirm() {
     }
     html += `</div>`;
   }
+
+  html += `<div class="res-card feedback-cta-card">
+    <div class="feedback-cta-text">💬 여러분들의 의견을 남겨주세요</div>
+    <button class="btn btn-confirm feedback-cta-btn" onclick="openFeedbackModal()">의견 남기기</button>
+  </div>`;
 
   const area = document.getElementById('resultArea');
   area.innerHTML = html;
