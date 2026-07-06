@@ -100,6 +100,15 @@
       gap: 8px;
     }
 
+    .cat-subblock + .cat-subblock { margin-top: 14px; }
+    .cat-subheader {
+      font-size: .9rem;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 8px;
+      padding-left: 2px;
+    }
+
     .cb-label {
       display: flex;
       align-items: center;
@@ -378,6 +387,7 @@
     }
     body.mobile-preview .cat-block + .cat-block { margin-top: 16px; padding-top: 16px; }
     body.mobile-preview .cat-header             { font-size: .88rem; padding: 7px 12px; margin-bottom: 11px; }
+    body.mobile-preview .cat-subheader          { font-size: .8rem; }
 
     body.mobile-preview .checkbox-grid          { grid-template-columns: 1fr 1fr; gap: 6px; }
     body.mobile-preview .cb-label               { padding: 11px 9px; gap: 7px; border-radius: 8px; }
@@ -791,16 +801,17 @@ const DATA = {
     { "id": "coupon1", "name": "신백리워드 쿠폰",    "category": "쿠폰", "note": null },
     { "id": "coupon4", "name": "제휴카드 쿠폰",          "category": "쿠폰", "note": null },
     { "id": "coupon_etc", "name": "기타 (QR/지류)", "category": "쿠폰", "note": "서비스권으로 처리됩니다, 사용증빙으로 전달할 별도 영수증을 출력해서 보관해주세요" },
-    { "id": "pay1",  "name": "현금",               "category": "결제수단", "note": null, "cashReceiptEligible": true },
-    { "id": "pay2",  "name": "제휴카드",            "category": "결제수단", "note": null, "cashReceiptEligible": false },
-    { "id": "pay3",  "name": "타사카드",            "category": "결제수단", "note": null, "cashReceiptEligible": false },
-    { "id": "pay4",  "name": "일반 상품권",         "category": "결제수단", "note": null, "cashReceiptEligible": true },
-    { "id": "pay5",  "name": "증정 상품권 (자사)",  "category": "결제수단", "note": null, "cashReceiptEligible": false },
-    { "id": "pay6",  "name": "증정 상품권 (타사)",  "category": "결제수단", "note": "상품권 금액을 제한 금액에 대해 세일리지/에누리 적용됩니다. 현금영수증 처리가 안될 시 고객님께서 상품권을 증정 받으신 점포를 확인해주세요.", "cashReceiptEligible": true },
-    { "id": "pay10", "name": "국민관광상품권",      "category": "결제수단", "note": "상품권 금액을 제한 금액에 대해 세일리지/에누리 적용됩니다", "cashReceiptEligible": true },
-    { "id": "pay7",  "name": "SSG머니, 카카오머니",            "category": "결제수단", "note": null, "cashReceiptEligible": true },
-    { "id": "pay8",  "name": "신백리워드",          "category": "결제수단", "note": null, "cashReceiptEligible": false },
-    { "id": "pay9",  "name": "신세계 포인트",        "category": "결제수단", "note": null, "cashReceiptEligible": false },
+    { "id": "pay1",  "name": "현금",               "category": "결제수단", "subCategory": "일반", "note": null, "cashReceiptEligible": true },
+    { "id": "pay2",  "name": "제휴카드",            "category": "결제수단", "subCategory": "일반", "note": null, "cashReceiptEligible": false },
+    { "id": "pay3",  "name": "타사카드",            "category": "결제수단", "subCategory": "일반", "note": null, "cashReceiptEligible": false },
+    { "id": "pay7",  "name": "SSG머니, 카카오머니",            "category": "결제수단", "subCategory": "일반", "note": null, "cashReceiptEligible": true },
+    { "id": "pay4",  "name": "일반 상품권",         "category": "결제수단", "subCategory": "상품권류", "note": null, "cashReceiptEligible": true },
+    { "id": "pay5",  "name": "증정 상품권 (자사)",  "category": "결제수단", "subCategory": "상품권류", "note": null, "cashReceiptEligible": false },
+    { "id": "pay6",  "name": "증정 상품권 (타사)",  "category": "결제수단", "subCategory": "상품권류", "note": "상품권 금액을 제한 금액에 대해 세일리지/에누리 적용됩니다. 현금영수증 처리가 안될 시 고객님께서 상품권을 증정 받으신 점포를 확인해주세요.", "cashReceiptEligible": true },
+    { "id": "pay10", "name": "국민관광상품권",      "category": "결제수단", "subCategory": "상품권류", "note": "상품권 금액을 제한 금액에 대해 세일리지/에누리 적용됩니다", "cashReceiptEligible": true },
+    { "id": "pay11", "name": "타사상품권",           "category": "결제수단", "subCategory": "상품권류", "note": null, "cashReceiptEligible": true },
+    { "id": "pay8",  "name": "신백리워드",          "category": "결제수단", "subCategory": "포인트류", "note": null, "cashReceiptEligible": false },
+    { "id": "pay9",  "name": "신세계 포인트",        "category": "결제수단", "subCategory": "포인트류", "note": null, "cashReceiptEligible": false },
     { "id": "sale1", "name": "S 세일리지 (VIP)",            "category": "세일리지/에누리", "note": "리워드쿠폰 사용시 쿠폰 사용후 금액에 대해 적용됩니다. 세일리지 잔여한도를 초과하는 금액 결제 시 적용 불가합니다." },
     { "id": "sale2", "name": "프로모션 세일리지",    "category": "세일리지/에누리", "note": "세일리지 잔여한도를 초과하는 금액 결제 시 적용 불가합니다." },
     { "id": "sale3", "name": "유니버스 클럽",         "category": "세일리지/에누리", "note": "세일리지 잔여한도를 초과하는 금액 결제 시 적용 불가합니다." },
@@ -827,16 +838,18 @@ const DATA = {
     ["sale1","sale2"],["sale1","sale3"],["sale1","sale4"],
     ["sale2","sale3"],["sale2","sale4"],
     ["sale3","sale4"],
-    ["sale4","sale5"]
+    ["sale4","sale5"],
+    ["pay11","coupon1"],["pay11","coupon4"],["pay11","sale1"],["pay11","sale2"],["pay11","sale5"]
   ],
   "accessCode": "1156",
   "sameItemAlwaysConflicts": true,
   "globalNotes": [
-    "현금 · 일반 상품권 · SSG머니, 카카오머니 · 증정 상품권(타사) · 국민관광상품권으로 결제한 금액의 합계까지만 발급 가능합니다."
+    "현금 · 일반 상품권 · SSG머니, 카카오머니 · 증정 상품권(타사) · 국민관광상품권 · 타사상품권으로 결제한 금액의 합계까지만 발급 가능합니다."
   ],
   "cautionRules": [
     { "items": ["coupon1", "coupon4"], "note": "[결제 순서] 결제가격 입력 → 제휴카드를 먼저 꽂고, 제휴카드 쿠폰 적용 → 할부 안내 창에서 '취소'를 누른 뒤 → 신백리워드 바코드 센싱 및 리워드 쿠폰 적용" },
-    { "items": ["coupon1", "sale4"], "note": "[최대 할인율 적용방법] 직원할인 선 적용 후 리워드 쿠폰 적용" }
+    { "items": ["coupon1", "sale4"], "note": "[최대 할인율 적용방법] 직원할인 선 적용 후 리워드 쿠폰 적용" },
+    { "items": ["pay11"], "note": "타사상품권 결제가 되지 않을 시 영업담당자를 통해 유사상품권 수취 약정서가 체결되어 있는지 확인해주세요." }
   ],
   "failureHints": [
     { "item": "coupon1", "note": "전액 본인 명의의 제휴카드로 결제 시 사용 가능합니다. (세일리지 사용가능)" },
@@ -856,7 +869,8 @@ const DATA = {
     "shinsegae": {
       "own":   "신세계 대구점 / 광주점 / Art&Science / 천안아산점이 아닌 점포에서 발행된 증정상품권",
       "other": "신세계 대구점 / 광주점 / Art&Science / 천안아산점 및 이마트에서 발행된 증정상품권"
-    }
+    },
+    "etc": "브랜드에서 발행된 상품권 (ex : LF상품권 外)"
   }
 };
 
@@ -888,14 +902,16 @@ function getGiftCardHints() {
     const t = tmpl.standalone;
     return [
       '※ 증정 상품권 (자사) : ' + t.own.replace('{store}', currentStore),
-      '※ 증정 상품권 (타사) : ' + t.other.replace('{store}', currentStore)
+      '※ 증정 상품권 (타사) : ' + t.other.replace('{store}', currentStore),
+      '※ 타사상품권 : ' + tmpl.etc
     ];
   }
   if (groups['일반점포'].includes(currentStore)) {
     const t = tmpl.shinsegae;
     return [
       '※ 증정 상품권 (자사) : ' + t.own,
-      '※ 증정 상품권 (타사) : ' + t.other
+      '※ 증정 상품권 (타사) : ' + t.other,
+      '※ 타사상품권 : ' + tmpl.etc
     ];
   }
   return [];
@@ -904,24 +920,42 @@ function getGiftCardHints() {
 /* ──────────────────────────────────────────────
    체크박스 렌더링
 ────────────────────────────────────────────── */
+const SUBCAT_ORDER = ['일반', '포인트류', '상품권류'];
+
+function renderItemBoxes(items) {
+  return items.map(item => `
+    <label class="cb-label" id="lbl-${item.id}">
+      <input type="checkbox" value="${item.id}" onchange="onCheck()">
+      ${escHtml(item.name)}
+    </label>`).join('');
+}
+
 function renderCheckboxes() {
   const card = document.getElementById('selectionCard');
+  const hints = getGiftCardHints();
+  const hintsHtml = hints.length
+    ? `<div class="cat-hints">${hints.map(h => `<span class="cat-hint-line">${escHtml(h)}</span>`).join('')}</div>`
+    : '';
   card.innerHTML = categories.map(cat => {
     const items = DATA.items.filter(i => i.category === cat);
     const icon  = CAT_ICONS[cat] || '📋';
-    const boxes = items.map(item => `
-      <label class="cb-label" id="lbl-${item.id}">
-        <input type="checkbox" value="${item.id}" onchange="onCheck()">
-        ${escHtml(item.name)}
-      </label>`).join('');
-    const hints = cat === '결제수단' ? getGiftCardHints() : [];
-    const hintsHtml = hints.length
-      ? `<div class="cat-hints">${hints.map(h => `<span class="cat-hint-line">${escHtml(h)}</span>`).join('')}</div>`
-      : '';
+    const hasSub = items.some(i => i.subCategory);
+    let bodyHtml;
+    if (hasSub) {
+      const subCats = [...new Set(items.map(i => i.subCategory || ''))]
+        .sort((a, b) => SUBCAT_ORDER.indexOf(a) - SUBCAT_ORDER.indexOf(b));
+      bodyHtml = subCats.map(sub => `
+        <div class="cat-subblock">
+          <div class="cat-subheader">${escHtml(sub)}</div>
+          <div class="checkbox-grid">${renderItemBoxes(items.filter(i => (i.subCategory || '') === sub))}</div>
+          ${cat === '결제수단' && sub === '상품권류' ? hintsHtml : ''}
+        </div>`).join('');
+    } else {
+      bodyHtml = `<div class="checkbox-grid">${renderItemBoxes(items)}</div>`;
+    }
     return `<div class="cat-block cat-${CAT_SLUG[cat] || 'default'}">
       <div class="cat-header"><span>${icon}</span> ${escHtml(cat)}</div>
-      <div class="checkbox-grid">${boxes}</div>
-      ${hintsHtml}
+      ${bodyHtml}
     </div>`;
   }).join('');
 }
@@ -1353,6 +1387,11 @@ function goBack() {
 
 /* ── 시작 ── */
 renderStoreCheckboxes();
+// 점포 선택화면 비활성화 - '김해점'을 기본값으로 바로 다음 단계 진입
+currentStore = '김해점';
+document.getElementById('authOverlay').classList.add('hidden');
+document.getElementById('storeBadge').textContent = '현재 매장: 신세계 ' + currentStore;
+document.getElementById('storeArea').style.display = '';
 renderCheckboxes();
 updateWideScreenClass();
 
