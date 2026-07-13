@@ -91,6 +91,7 @@
       margin-bottom: 14px;
     }
     .cat-coupon .cat-header { color: #5b21b6; background: #f5f3ff; }
+    .cat-point  .cat-header { color: #b45309; background: #fffbeb; }
     .cat-pay    .cat-header { color: #1d4ed8; background: #eff6ff; }
     .cat-sale   .cat-header { color: #065f46; background: #ecfdf5; }
 
@@ -129,6 +130,9 @@
     .cat-coupon .cb-label:hover                { border-color: #c4b5fd; background: #faf5ff; }
     .cat-coupon .cb-label.checked              { border-color: #7c3aed; background: #f5f3ff; color: #5b21b6; }
     .cat-coupon .cb-label input[type=checkbox] { accent-color: #7c3aed; }
+    .cat-point  .cb-label:hover                { border-color: #fcd34d; background: #fffbeb; }
+    .cat-point  .cb-label.checked              { border-color: #d97706; background: #fef3c7; color: #92400e; }
+    .cat-point  .cb-label input[type=checkbox] { accent-color: #d97706; }
     .cat-pay    .cb-label:hover                { border-color: #93c5fd; background: #eff6ff; }
     .cat-pay    .cb-label.checked              { border-color: #2563eb; background: #eff6ff; color: #1d4ed8; }
     .cat-pay    .cb-label input[type=checkbox] { accent-color: #2563eb; }
@@ -195,13 +199,11 @@
     /* ── STATUS BANNER ── */
     .status-banner {
       border-radius: 14px;
-      padding: 30px 24px;
+      padding: 14px 20px;
       text-align: center;
       margin-bottom: 14px;
     }
-    .status-banner .s-icon  { font-size: 3rem; margin-bottom: 10px; line-height: 1; }
-    .status-banner .s-title { font-size: 2rem; font-weight: 800; letter-spacing: -.02em; }
-    .status-banner .s-sub   { margin-top: 8px; font-size: 1rem; }
+    .status-banner .s-title { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
     .banner-ok      { background: #f0fdf4; border: 3px solid #86efac; color: #166534; }
     .banner-fail    { background: #fff1f2; border: 3px solid #fda4af; color: #9f1239; }
     .banner-caution { background: #fffbeb; border: 3px solid #fcd34d; color: #92400e; }
@@ -257,7 +259,14 @@
     .alt-item {
       padding: 14px 16px;
       background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px;
+      cursor: pointer;
+      transition: background .14s, border-color .14s, box-shadow .14s, transform .1s;
     }
+    .alt-item:hover {
+      background: #dcfce7; border-color: #4ade80;
+      box-shadow: 0 3px 10px rgba(22,163,74,.18);
+    }
+    .alt-item:active { transform: scale(.99); }
     .alt-label {
       font-size: .78rem; font-weight: 700; color: #16a34a;
       text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px;
@@ -306,7 +315,6 @@
       margin-bottom: 14px;
       border: 2px solid;
     }
-    .cr-status .cr-s-icon  { font-size: 1.9rem; line-height: 1; margin-bottom: 7px; }
     .cr-status .cr-s-title { font-size: 1.1rem; font-weight: 800; letter-spacing: -.02em; }
     .cr-status .cr-s-tags  { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 10px; }
     .cr-status .cr-s-tag   { padding: 3px 11px; border-radius: 20px; font-size: .85rem; font-weight: 600; border: 1.5px solid; }
@@ -315,7 +323,6 @@
     .cr-status.cr-fail { background: #fff1f2; border-color: #fda4af; color: #9f1239; }
     .cr-status.cr-fail .cr-s-tag { background: white; border-color: #fda4af; color: #be123c; }
     body.mobile-preview .cr-status             { padding: 13px 12px 10px; margin-bottom: 11px; }
-    body.mobile-preview .cr-status .cr-s-icon  { font-size: 1.55rem; margin-bottom: 5px; }
     body.mobile-preview .cr-status .cr-s-title { font-size: .97rem; }
     body.mobile-preview .cr-status .cr-s-tag   { font-size: .78rem; padding: 2px 9px; }
 
@@ -416,13 +423,11 @@
 
     body.mobile-preview .status-banner {
       border-radius: 0;
-      padding: 20px 14px;
+      padding: 12px 14px;
       margin-bottom: 0;
       border-left: none; border-right: none;
     }
-    body.mobile-preview .status-banner .s-icon  { font-size: 2.2rem; margin-bottom: 7px; }
-    body.mobile-preview .status-banner .s-title { font-size: 1.45rem; }
-    body.mobile-preview .status-banner .s-sub   { font-size: .86rem; margin-top: 5px; }
+    body.mobile-preview .status-banner .s-title { font-size: 1.05rem; }
 
     body.mobile-preview .res-card {
       border-radius: 0;
@@ -441,8 +446,8 @@
     body.mobile-preview .alt-label     { font-size: .72rem; margin-bottom: 7px; }
     body.mobile-preview .tag           { font-size: .8rem; padding: 4px 9px; }
 
-    body.mobile-preview .note-row      { padding: 10px 11px; gap: 8px; }
-    body.mobile-preview .note-name     { font-size: .79rem; }
+    body.mobile-preview .note-row      { flex-direction: column; align-items: flex-start; padding: 10px 11px; gap: 0; }
+    body.mobile-preview .note-name     { font-size: .79rem; white-space: nowrap; margin-bottom: 4px; }
     body.mobile-preview .note-text     { font-size: .81rem; }
 
     body.mobile-preview .cr-grid       { grid-template-columns: 1fr; gap: 8px; margin-bottom: 11px; }
@@ -668,6 +673,102 @@
     body.mobile-preview .feedback-modal-box { max-width: 320px; }
     body.mobile-preview .feedback-modal-body iframe { min-height: 56vh; }
 
+    /* ── 결제 순서 안내 모달 ── */
+    #paymentOrderModalOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(15,23,42,.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #paymentOrderModalOverlay.hidden { display: none; }
+    .payment-order-modal-box { max-width: 560px; }
+    .payment-order-modal-body {
+      overflow-y: auto;
+      background: white;
+      padding: 22px 20px;
+    }
+    body.mobile-preview .payment-order-modal-box { max-width: 320px; }
+    body.mobile-preview .payment-order-modal-body { padding: 16px 14px; }
+
+    /* ── 결제 순서 흐름도 (po-flow) ── */
+    .po-flow {
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 14px 10px;
+    }
+    .po-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      max-width: 260px;
+    }
+    .po-stage-badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 9px 20px;
+      font-size: .95rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .po-stage-1 { background: #f5e896; color: #4a3a0a; }
+    .po-stage-2 { background: #bcdcea; color: #123a5e; }
+    .po-stage-3 { background: #dde6c4; color: #3d4a1e; }
+    .po-stage-items {
+      font-size: .88rem;
+      color: #334155;
+      text-align: center;
+      line-height: 1.7;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+    .po-item-name {
+      white-space: nowrap;
+    }
+    .po-mini-arrow {
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: .85rem;
+      margin: 0 5px;
+      display: inline-block;
+    }
+    .po-step-mark {
+      color: #2563eb;
+      font-weight: 800;
+      font-size: 1rem;
+      margin-right: 2px;
+    }
+    .po-stage-arrow {
+      font-size: 24px;
+      line-height: 1;
+      color: #94a3b8;
+      flex-shrink: 0;
+      align-self: flex-start;
+      margin-top: 8px;
+    }
+    /* 모바일에서는 단계를 세로로 쌓고, 단계 전환 화살표도 아래 방향(↓)으로 회전 */
+    body.mobile-preview .po-flow {
+      flex-direction: column;
+      align-items: center;
+      gap: 10px 8px;
+    }
+    body.mobile-preview .po-stage       { max-width: 100%; gap: 7px; }
+    body.mobile-preview .po-stage-badge { font-size: .82rem; padding: 7px 15px; }
+    body.mobile-preview .po-stage-items { font-size: .78rem; line-height: 1.6; }
+    body.mobile-preview .po-mini-arrow  { font-size: .78rem; margin: 0 3px; }
+    body.mobile-preview .po-step-mark   { font-size: .88rem; }
+    body.mobile-preview .po-stage-arrow {
+      font-size: 20px;
+      align-self: center;
+      margin: 0;
+      transform: rotate(90deg);
+    }
+
     /* ── 결과 화면 내 의견 남기기 섹션 ── */
     .feedback-cta-card {
       text-align: center;
@@ -689,7 +790,7 @@
       body:not(.mobile-preview) #appOuter { padding: 12px 10px 50px; }
       body:not(.mobile-preview) .app-header h1 { font-size: 1.55rem; }
       body:not(.mobile-preview) .checkbox-grid { grid-template-columns: 1fr 1fr; }
-      body:not(.mobile-preview) .status-banner .s-title { font-size: 1.65rem; }
+      body:not(.mobile-preview) .status-banner .s-title { font-size: 1.15rem; }
       body:not(.mobile-preview) .btn { padding: 13px 28px; font-size: 1rem; }
       body:not(.mobile-preview) .res-card { padding: 18px 16px; }
       body:not(.mobile-preview) .cr-grid { grid-template-columns: 1fr; }
@@ -767,6 +868,17 @@
   </div>
 </div>
 
+<!-- ── 결제 순서 안내 모달 ── -->
+<div id="paymentOrderModalOverlay" class="hidden">
+  <div class="feedback-modal-box payment-order-modal-box">
+    <div class="feedback-modal-header">
+      <span class="feedback-modal-title">🔀 결제 순서 안내</span>
+      <button class="feedback-modal-close" onclick="closePaymentOrderModal()" aria-label="닫기">✕</button>
+    </div>
+    <div class="feedback-modal-body payment-order-modal-body" id="paymentOrderModalBody"></div>
+  </div>
+</div>
+
 <script>
 const FEEDBACK_FORM_URL = "https://forms.gle/zBbGCjJYac8qm2iz5";
 
@@ -794,6 +906,20 @@ function closeFeedbackModal() {
 }
 
 /* ──────────────────────────────────────────────
+   결제 순서 안내 모달 (대안 조합 클릭 시)
+────────────────────────────────────────────── */
+function showPaymentOrderModal(ids) {
+  const flowHtml = renderPaymentOrderFlow(ids);
+  document.getElementById('paymentOrderModalBody').innerHTML =
+    flowHtml || '<p style="padding:20px;color:#64748b;">표시할 결제 순서 정보가 없습니다.</p>';
+  document.getElementById('paymentOrderModalOverlay').classList.remove('hidden');
+}
+
+function closePaymentOrderModal() {
+  document.getElementById('paymentOrderModalOverlay').classList.add('hidden');
+}
+
+/* ──────────────────────────────────────────────
    데이터
 ────────────────────────────────────────────── */
 const DATA = {
@@ -801,22 +927,24 @@ const DATA = {
     { "id": "coupon1", "name": "신백리워드 쿠폰",    "category": "쿠폰", "note": null },
     { "id": "coupon4", "name": "제휴카드 쿠폰",          "category": "쿠폰", "note": null },
     { "id": "coupon_etc", "name": "기타 (QR/지류)", "category": "쿠폰", "note": "서비스권으로 처리됩니다, 사용증빙으로 전달할 별도 영수증을 출력해서 보관해주세요" },
-    { "id": "pay1",  "name": "현금",               "category": "결제수단", "subCategory": "일반", "note": null, "cashReceiptEligible": true },
-    { "id": "pay2",  "name": "제휴카드",            "category": "결제수단", "subCategory": "일반", "note": null, "cashReceiptEligible": false },
-    { "id": "pay3",  "name": "타사카드",            "category": "결제수단", "subCategory": "일반", "note": null, "cashReceiptEligible": false },
-    { "id": "pay7",  "name": "SSG머니, 카카오머니",            "category": "결제수단", "subCategory": "일반", "note": null, "cashReceiptEligible": true },
-    { "id": "pay4",  "name": "일반 상품권",         "category": "결제수단", "subCategory": "상품권류", "note": null, "cashReceiptEligible": true },
-    { "id": "pay5",  "name": "증정 상품권 (자사)",  "category": "결제수단", "subCategory": "상품권류", "note": null, "cashReceiptEligible": false },
-    { "id": "pay6",  "name": "증정 상품권 (타사)",  "category": "결제수단", "subCategory": "상품권류", "note": "상품권 금액을 제한 금액에 대해 세일리지/에누리 적용됩니다. 현금영수증 처리가 안될 시 고객님께서 상품권을 증정 받으신 점포를 확인해주세요.", "cashReceiptEligible": true },
-    { "id": "pay10", "name": "국민관광상품권",      "category": "결제수단", "subCategory": "상품권류", "note": "상품권 금액을 제한 금액에 대해 세일리지/에누리 적용됩니다", "cashReceiptEligible": true },
-    { "id": "pay11", "name": "타사상품권",           "category": "결제수단", "subCategory": "상품권류", "note": null, "cashReceiptEligible": true },
-    { "id": "pay8",  "name": "신백리워드",          "category": "결제수단", "subCategory": "포인트류", "note": null, "cashReceiptEligible": false },
-    { "id": "pay9",  "name": "신세계 포인트",        "category": "결제수단", "subCategory": "포인트류", "note": null, "cashReceiptEligible": false },
-    { "id": "sale1", "name": "S 세일리지 (VIP)",            "category": "세일리지/에누리", "note": "리워드쿠폰 사용시 쿠폰 사용후 금액에 대해 적용됩니다. 세일리지 잔여한도를 초과하는 금액 결제 시 적용 불가합니다." },
-    { "id": "sale2", "name": "프로모션 세일리지",    "category": "세일리지/에누리", "note": "세일리지 잔여한도를 초과하는 금액 결제 시 적용 불가합니다." },
-    { "id": "sale3", "name": "유니버스 클럽",         "category": "세일리지/에누리", "note": "세일리지 잔여한도를 초과하는 금액 결제 시 적용 불가합니다." },
+    { "id": "pay8",  "name": "신백리워드",          "category": "포인트", "note": null, "cashReceiptEligible": false },
+    { "id": "pay9",  "name": "신세계포인트",        "category": "포인트", "note": null, "cashReceiptEligible": false },
+    { "id": "pay2",  "name": "신세계 제휴카드",       "category": "결제수단", "subCategory": "카드", "note": null, "cashReceiptEligible": false },
+    { "id": "pay3",  "name": "일반카드",            "category": "결제수단", "subCategory": "카드", "note": null, "cashReceiptEligible": false },
+    { "id": "pay1",  "name": "현금",               "category": "결제수단", "subCategory": "현금류", "note": null, "cashReceiptEligible": true },
+    { "id": "pay13", "name": "외화",               "category": "결제수단", "subCategory": "현금류", "note": null, "cashReceiptEligible": true },
+    { "id": "pay12", "name": "수표",               "category": "결제수단", "subCategory": "현금류", "note": null, "cashReceiptEligible": true },
+    { "id": "pay4",  "name": "일반 상품권",         "category": "결제수단", "subCategory": "상품권/머니", "note": null, "cashReceiptEligible": true },
+    { "id": "pay5",  "name": "증정 상품권 (자사)",  "category": "결제수단", "subCategory": "상품권/머니", "note": null, "cashReceiptEligible": false },
+    { "id": "pay6",  "name": "증정 상품권 (타사)",  "category": "결제수단", "subCategory": "상품권/머니", "note": null, "cashReceiptEligible": true },
+    { "id": "pay7",  "name": "SSG머니, 카카오머니",            "category": "결제수단", "subCategory": "상품권/머니", "note": null, "cashReceiptEligible": true },
+    { "id": "pay10", "name": "국민관광/스포츠/화장품",      "category": "결제수단", "subCategory": "상품권/머니", "note": null, "cashReceiptEligible": true },
+    { "id": "pay11", "name": "임대상품권",           "category": "결제수단", "subCategory": "상품권/머니", "note": null, "cashReceiptEligible": true },
+    { "id": "sale1", "name": "S 세일리지 (VIP)",            "category": "세일리지/에누리", "note": null },
+    { "id": "sale2", "name": "프로모션 세일리지",    "category": "세일리지/에누리", "note": null },
+    { "id": "sale3", "name": "유니버스 클럽",         "category": "세일리지/에누리", "note": null },
     { "id": "sale4", "name": "직원 할인",             "category": "세일리지/에누리", "note": null },
-    { "id": "sale5", "name": "수기 에누리",           "category": "세일리지/에누리", "note": "상품등록 화면에서 우선 적용이 필요합니다." }
+    { "id": "sale5", "name": "수기 에누리",           "category": "세일리지/에누리", "note": null }
   ],
   "conflictPairs": [
     ["coupon1","coupon_etc"],["coupon1","pay1"],["coupon1","pay3"],
@@ -828,34 +956,65 @@ const DATA = {
     ["coupon4","sale1"],["coupon4","sale2"],["coupon4","sale3"],["coupon4","sale4"],["coupon4","sale5"],
     ["pay1","sale2"],
     ["pay3","sale1"],["pay3","sale2"],
-    ["pay4","sale1"],["pay4","sale2"],
-    ["pay5","sale1"],["pay5","sale2"],["pay5","sale3"],["pay5","sale5"],
-    ["pay6","sale1"],["pay6","sale2"],["pay6","sale5"],
-    ["pay7","sale2"],["pay7","sale5"],
+    ["pay4","sale2"],
+    ["pay5","sale2"],["pay5","sale3"],["pay5","sale5"],
+    ["pay6","sale2"],["pay6","sale5"],
+    ["pay7","sale2"],
     ["pay8","sale2"],
     ["pay9","sale2"],["pay9","sale5"],
-    ["pay10","sale1"],["pay10","sale2"],["pay10","sale5"],
+    ["pay10","sale2"],["pay10","sale4"],["pay10","sale5"],
     ["sale1","sale2"],["sale1","sale3"],["sale1","sale4"],
     ["sale2","sale3"],["sale2","sale4"],
     ["sale3","sale4"],
     ["sale4","sale5"],
-    ["pay11","coupon1"],["pay11","coupon4"],["pay11","sale1"],["pay11","sale2"],["pay11","sale5"]
+    ["pay11","coupon1"],["pay11","coupon4"],["pay11","sale2"],["pay11","sale4"],["pay11","sale5"],
+    ["pay12","coupon1"],["pay12","coupon4"],["pay12","sale2"],
+    ["pay13","coupon1"],["pay13","coupon4"],["pay13","sale2"]
   ],
   "accessCode": "1156",
   "sameItemAlwaysConflicts": true,
   "globalNotes": [
-    "현금 · 일반 상품권 · SSG머니, 카카오머니 · 증정 상품권(타사) · 국민관광상품권 · 타사상품권으로 결제한 금액의 합계까지만 발급 가능합니다."
+    "현금류 · 머니류(SSG,카카오) · 증정 상품권(자사)를 제외한 상품권으로 결제한 금액의 합계까지만 발급 가능합니다."
   ],
   "cautionRules": [
-    { "items": ["coupon1", "coupon4"], "note": "[결제 순서] 결제가격 입력 → 제휴카드를 먼저 꽂고, 제휴카드 쿠폰 적용 → 할부 안내 창에서 '취소'를 누른 뒤 → 신백리워드 바코드 센싱 및 리워드 쿠폰 적용" },
-    { "items": ["coupon1", "sale4"], "note": "[최대 할인율 적용방법] 직원할인 선 적용 후 리워드 쿠폰 적용" },
-    { "items": ["pay11"], "note": "타사상품권 결제가 되지 않을 시 영업담당자를 통해 유사상품권 수취 약정서가 체결되어 있는지 확인해주세요." }
+    { "items": ["coupon1", "coupon4"], "note": "[결제 순서] 결제가격 입력 → 제휴카드를 꽂고, 제휴카드 쿠폰 적용 → 할부 안내 창에서 '취소' 선택 → 리워드 쿠폰 적용" },
+    { "items": ["pay11"], "note": "임대상품권 오류 발생 시 영업담당을 통해 '유사상품권 수취계약'이 되어있는지 확인 바랍니다." },
+    { "items": ["pay12"], "note": "정액권 수표만 수령 가능합니다(10/50/100만원). 그외 권종은 고객님께서 직접 은행 방문하시어 현금으로 전환하신 뒤 내점바랍니다." }
   ],
   "failureHints": [
-    { "item": "coupon1", "note": "전액 본인 명의의 제휴카드로 결제 시 사용 가능합니다. (세일리지 사용가능)" },
-    { "item": "coupon4", "note": "전액 본인 명의의 제휴카드로 결제 시 사용 가능합니다. (세일리지 사용불가)" },
-    { "item": "sale1", "note": "현금 또는 전액 본인 명의의 제휴카드로 결제 시 사용 가능합니다." },
-    { "item": "sale2", "note": "전액 본인 명의의 제휴카드로 결제 시 사용 가능합니다." }
+    { "item": "coupon1", "note": "전액 본인 명의 제휴카드 결제 시 사용가능." },
+    { "item": "coupon4", "note": "전액 본인 명의 제휴카드 결제 시 사용가능." },
+    { "item": "sale2", "note": "전액 본인 명의 제휴카드 결제 시 사용가능." }
+  ],
+  "paymentOrderStageLabels": {
+    "1": "등록 탭",
+    "2": "적립/선언 탭",
+    "3": "결제 탭"
+  },
+  "paymentOrder": [
+    { "id": "sale5", "stage": 1, "priority": 1 },
+
+    { "id": "sale4", "stage": 2, "priority": 1 },
+    { "id": "coupon4", "stage": 2, "priority": 2 },
+    { "id": "sale1", "stage": 2, "priority": 3 },
+    { "id": "sale2", "stage": 2, "priority": 3 },
+    { "id": "sale3", "stage": 2, "priority": 3 },
+    { "id": "pay9", "stage": 2, "priority": 4 },
+    { "id": "pay8", "stage": 2, "priority": 5 },
+    { "id": "coupon1", "stage": 2, "priority": 6 },
+    { "id": "pay7", "stage": 2, "priority": 7 },
+
+    { "id": "coupon_etc", "stage": 3, "priority": 1 },
+    { "id": "pay4", "stage": 3, "priority": 2 },
+    { "id": "pay5", "stage": 3, "priority": 2 },
+    { "id": "pay6", "stage": 3, "priority": 2 },
+    { "id": "pay10", "stage": 3, "priority": 2 },
+    { "id": "pay11", "stage": 3, "priority": 2 },
+    { "id": "pay1", "stage": 3, "priority": 3 },
+    { "id": "pay13", "stage": 3, "priority": 3 },
+    { "id": "pay12", "stage": 3, "priority": 3 },
+    { "id": "pay2", "stage": 3, "priority": 4 },
+    { "id": "pay3", "stage": 3, "priority": 4 }
   ],
   "storeGroups": {
     "별도법인": ["대구점","광주점","Art&Science","천안아산점"],
@@ -870,7 +1029,7 @@ const DATA = {
       "own":   "신세계 대구점 / 광주점 / Art&Science / 천안아산점이 아닌 점포에서 발행된 증정상품권",
       "other": "신세계 대구점 / 광주점 / Art&Science / 천안아산점 및 이마트에서 발행된 증정상품권"
     },
-    "etc": "브랜드에서 발행된 상품권 (ex : LF상품권 外)"
+    "etc": "브랜드에서 발행된 상품권 (ex : 금강상품권, LF상품권 外)"
   }
 };
 
@@ -887,9 +1046,16 @@ DATA.conflictPairs.forEach(([a, b]) => {
   conflictSet.add(b + ',' + a);
 });
 
-const CAT_ICONS = { '쿠폰': '🎫', '결제수단': '💳', '세일리지/에누리': '🏷️' };
-const CAT_SLUG  = { '쿠폰': 'coupon', '결제수단': 'pay', '세일리지/에누리': 'sale' };
+const CAT_ICONS = { '쿠폰': '🎫', '포인트': '⭐', '결제수단': '💳', '세일리지/에누리': '🏷️' };
+const CAT_SLUG  = { '쿠폰': 'coupon', '포인트': 'point', '결제수단': 'pay', '세일리지/에누리': 'sale' };
 const categories = [...new Set(DATA.items.map(i => i.category))];
+
+/* ──────────────────────────────────────────────
+   결제 순서 안내 (등록 → 적립/선언 → 결제 흐름)
+────────────────────────────────────────────── */
+const PAYMENT_ORDER_STAGE_LABELS = DATA.paymentOrderStageLabels;
+const paymentOrderById = Object.fromEntries(DATA.paymentOrder.map(o => [o.id, o]));
+const paymentOrderItemIndex = Object.fromEntries(DATA.items.map((it, idx) => [it.id, idx]));
 
 /* ──────────────────────────────────────────────
    증정상품권 안내 문구 (매장별 동적 생성)
@@ -903,7 +1069,7 @@ function getGiftCardHints() {
     return [
       '※ 증정 상품권 (자사) : ' + t.own.replace('{store}', currentStore),
       '※ 증정 상품권 (타사) : ' + t.other.replace('{store}', currentStore),
-      '※ 타사상품권 : ' + tmpl.etc
+      '※ 임대상품권 : ' + tmpl.etc
     ];
   }
   if (groups['일반점포'].includes(currentStore)) {
@@ -911,7 +1077,7 @@ function getGiftCardHints() {
     return [
       '※ 증정 상품권 (자사) : ' + t.own,
       '※ 증정 상품권 (타사) : ' + t.other,
-      '※ 타사상품권 : ' + tmpl.etc
+      '※ 임대상품권 : ' + tmpl.etc
     ];
   }
   return [];
@@ -920,7 +1086,7 @@ function getGiftCardHints() {
 /* ──────────────────────────────────────────────
    체크박스 렌더링
 ────────────────────────────────────────────── */
-const SUBCAT_ORDER = ['일반', '포인트류', '상품권류'];
+const SUBCAT_ORDER = ['카드', '현금류', '상품권/머니'];
 
 function renderItemBoxes(items) {
   return items.map(item => `
@@ -948,7 +1114,7 @@ function renderCheckboxes() {
         <div class="cat-subblock">
           <div class="cat-subheader">${escHtml(sub)}</div>
           <div class="checkbox-grid">${renderItemBoxes(items.filter(i => (i.subCategory || '') === sub))}</div>
-          ${cat === '결제수단' && sub === '상품권류' ? hintsHtml : ''}
+          ${cat === '결제수단' && sub === '상품권/머니' ? hintsHtml : ''}
         </div>`).join('');
     } else {
       bodyHtml = `<div class="checkbox-grid">${renderItemBoxes(items)}</div>`;
@@ -1055,6 +1221,49 @@ function setsEqual(a, b) {
 }
 
 /* ──────────────────────────────────────────────
+   결제 순서 흐름도 렌더링
+────────────────────────────────────────────── */
+const PAYMENT_ORDER_STEP_MARKS = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫','⑬','⑭','⑮','⑯','⑰','⑱','⑲','⑳'];
+
+function renderPaymentOrderFlow(selectedIds) {
+  let stepCounter = 0;
+
+  const stageBlocks = [1, 2, 3].map(stage => {
+    const stageItems = selectedIds.filter(id => paymentOrderById[id] && paymentOrderById[id].stage === stage);
+    if (stageItems.length === 0) return null;
+
+    const byPriority = new Map();
+    stageItems.forEach(id => {
+      const p = paymentOrderById[id].priority;
+      if (!byPriority.has(p)) byPriority.set(p, []);
+      byPriority.get(p).push(id);
+    });
+
+    const priorityText = [...byPriority.keys()]
+      .sort((a, b) => a - b)
+      .map(p => {
+        const mark = PAYMENT_ORDER_STEP_MARKS[stepCounter] || (stepCounter + 1) + '.';
+        stepCounter++;
+        const names = byPriority.get(p)
+          .sort((a, b) => paymentOrderItemIndex[a] - paymentOrderItemIndex[b])
+          .map(id => `<span class="po-item-name">${escHtml(itemById[id].name)}</span>`)
+          .join(', ');
+        return `<span class="po-step-mark">${mark}</span> ${names}`;
+      })
+      .join('<span class="po-mini-arrow">→</span>');
+
+    return `<div class="po-stage">
+      <span class="po-stage-badge po-stage-${stage}">${escHtml(PAYMENT_ORDER_STAGE_LABELS[stage])}</span>
+      <div class="po-stage-items">${priorityText}</div>
+    </div>`;
+  }).filter(Boolean);
+
+  if (stageBlocks.length === 0) return '';
+
+  return `<div class="po-flow">${stageBlocks.join('<span class="po-stage-arrow">→</span>')}</div>`;
+}
+
+/* ──────────────────────────────────────────────
    확인 버튼
 ────────────────────────────────────────────── */
 function doConfirm() {
@@ -1105,11 +1314,17 @@ function doConfirm() {
     const matchedCautions = DATA.cautionRules.filter(rule =>
       rule.items.every(id => selected.includes(id))
     );
+
+    const giftCardSaleNote = "현금 및 신세계 제휴카드로 결제한 금액에 대해서만 세일리지/에누리 적용됩니다.";
+    const hasSale1VIP = selected.includes('sale1');
+    const hasGiftCardOrMoney = selected.some(id => itemById[id] && itemById[id].subCategory === '상품권/머니');
+    if (hasSale1VIP && hasGiftCardOrMoney && !matchedCautions.some(rule => rule.note === giftCardSaleNote)) {
+      matchedCautions.push({ items: ['sale1'], note: giftCardSaleNote });
+    }
+
     if (matchedCautions.length > 0) {
       html += `<div class="status-banner banner-caution">
-        <div class="s-icon">⚠️</div>
         <div class="s-title">결제 가능 (유의사항 있음)</div>
-        <div class="s-sub">결제 전 아래 유의사항을 확인하세요.</div>
       </div>`;
       html += `<div class="res-card">
         <div class="res-card-title">⚠️ 유의사항</div>
@@ -1120,17 +1335,22 @@ function doConfirm() {
       html += `</div></div>`;
     } else {
       html += `<div class="status-banner banner-ok">
-        <div class="s-icon">✅</div>
         <div class="s-title">결제 가능</div>
-        <div class="s-sub">선택하신 조합으로 결제하실 수 있습니다.</div>
       </div>`;
     }
+
+    const flowHtml = renderPaymentOrderFlow(selected);
+    if (flowHtml) {
+      html += `<div class="res-card">
+        <div class="res-card-title">🔀 결제 순서</div>
+        ${flowHtml}
+      </div>`;
+    }
+
     html += noticeHtml;
   } else {
     html += `<div class="status-banner banner-fail">
-      <div class="s-icon">❌</div>
       <div class="s-title">결제 불가</div>
-      <div class="s-sub">아래의 항목들이 서로 충돌합니다. 대안 조합을 확인하세요.</div>
     </div>`;
 
     const conflictCount = {};
@@ -1177,7 +1397,7 @@ function doConfirm() {
         html += `<div class="res-card-title" style="margin-top:18px">🎫 쿠폰 사용 가능 조합</div>
           <div class="alt-list">`;
         couponDisplay.forEach((alt) => {
-          html += `<div class="alt-item">
+          html += `<div class="alt-item" onclick='showPaymentOrderModal(${JSON.stringify(alt).replace(/'/g, "&#39;")})'>
             <div class="tag-row">${alt.map(id => `<span class="tag">${escHtml(itemById[id].name)}</span>`).join('')}</div>
           </div>`;
         });
@@ -1190,7 +1410,7 @@ function doConfirm() {
         html += `<div class="res-card-title" style="margin-top:18px">🏷️ 세일리지/에누리 사용 가능 조합</div>
           <div class="alt-list">`;
         saleDisplay.forEach((alt) => {
-          html += `<div class="alt-item">
+          html += `<div class="alt-item" onclick='showPaymentOrderModal(${JSON.stringify(alt).replace(/'/g, "&#39;")})'>
             <div class="tag-row">${alt.map(id => `<span class="tag">${escHtml(itemById[id].name)}</span>`).join('')}</div>
           </div>`;
         });
@@ -1205,7 +1425,7 @@ function doConfirm() {
         html += `<div class="res-card-title" style="margin-top:18px">✨ 서로 사용 가능한 조합</div>
           <div class="alt-list">`;
         display.forEach((alt) => {
-          html += `<div class="alt-item">
+          html += `<div class="alt-item" onclick='showPaymentOrderModal(${JSON.stringify(alt).replace(/'/g, "&#39;")})'>
             <div class="tag-row">${alt.map(id => `<span class="tag">${escHtml(itemById[id].name)}</span>`).join('')}</div>
           </div>`;
         });
@@ -1227,7 +1447,6 @@ function doConfirm() {
     if (ineligible.length === 0 && eligible.length > 0) {
       // 1) 전액 가능
       html += `<div class="cr-status cr-ok">
-        <div class="cr-s-icon">✅</div>
         <div class="cr-s-title">현금영수증 발급 가능</div>
         <div class="cr-s-tags">${eligible.map(i => `<span class="cr-s-tag">${escHtml(i.name)}</span>`).join('')}</div>
       </div>`;
@@ -1235,12 +1454,12 @@ function doConfirm() {
       // 2) 혼합
       html += `<div class="cr-grid">
         <div class="cr-box yes">
-          <div class="cr-box-title">✅ 발급 가능</div>
+          <div class="cr-box-title">발급 가능</div>
           <ul class="cr-items">`;
       eligible.forEach(i => { html += `<li>${escHtml(i.name)}</li>`; });
       html += `</ul></div>
         <div class="cr-box no">
-          <div class="cr-box-title">❌ 발급 불가</div>
+          <div class="cr-box-title">발급 불가</div>
           <ul class="cr-items">`;
       ineligible.forEach(i => { html += `<li>${escHtml(i.name)}</li>`; });
       html += `</ul></div></div>`;
@@ -1248,7 +1467,6 @@ function doConfirm() {
     } else if (eligible.length === 0 && ineligible.length > 0) {
       // 3) 전액 불가
       html += `<div class="cr-status cr-fail">
-        <div class="cr-s-icon">❌</div>
         <div class="cr-s-title">현금영수증 발행 불가</div>
         <div class="cr-s-tags">${ineligible.map(i => `<span class="cr-s-tag">${escHtml(i.name)}</span>`).join('')}</div>
       </div>`;
@@ -1258,7 +1476,7 @@ function doConfirm() {
   }
 
   html += `<div class="res-card feedback-cta-card">
-    <div class="feedback-cta-text">💬 소중한 의견을 남겨주시고 간식도 챙겨가세요 🧋🍦 </div>
+    <div class="feedback-cta-text">💬 소중한 의견을 남겨주세요 </div>
     <button class="btn btn-confirm feedback-cta-btn" onclick="openFeedbackModal()">의견 남기고 이벤트 참여하기</button>
   </div>`;
 
