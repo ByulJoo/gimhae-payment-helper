@@ -1182,8 +1182,8 @@ const DATA = {
     { "id": "pay7",  "name": "SSG머니, 카카오머니",            "category": "결제수단", "subCategory": "상품권/머니", "note": null, "cashReceiptEligible": true },
     { "id": "pay10", "name": "국민관광/스포츠/화장품",      "category": "결제수단", "subCategory": "상품권/머니", "note": null, "cashReceiptEligible": true },
     { "id": "pay11", "name": "임대상품권",           "category": "결제수단", "subCategory": "상품권/머니", "note": null, "cashReceiptEligible": true },
-    { "id": "sale1", "name": "S 세일리지 (VIP)",            "category": "세일리지/에누리", "note": "현금 및 본인명의 제휴카드 결제 금액에 대해서만 적용됩니다" },
-    { "id": "sale2", "name": "프로모션 세일리지",    "category": "세일리지/에누리", "note": "현금 및 본인명의 제휴카드 결제 금액에 대해서만 적용됩니다" },
+    { "id": "sale1", "name": "S 세일리지 (VIP)",            "category": "세일리지/에누리", "note": null },
+    { "id": "sale2", "name": "프로모션 세일리지",    "category": "세일리지/에누리", "note": null },
     { "id": "sale3", "name": "유니버스 클럽",         "category": "세일리지/에누리", "note": null },
     { "id": "sale4", "name": "직원 할인",             "category": "세일리지/에누리", "note": null },
     { "id": "sale5", "name": "수기 에누리",           "category": "세일리지/에누리", "note": null }
@@ -1221,7 +1221,9 @@ const DATA = {
   "cautionRules": [
     { "items": ["coupon1", "coupon4"], "note": "[결제 순서] 결제가격 입력 → 제휴카드를 꽂고, 제휴카드 쿠폰 적용 → 할부 안내 창에서 '취소' 선택 → 리워드 쿠폰 적용" },
     { "items": ["pay11"], "note": "임대상품권 오류 발생 시 영업담당을 통해 '유사상품권 수취계약'이 되어있는지 확인 바랍니다." },
-    { "items": ["pay12"], "note": "정액권 수표만 수령 가능합니다(10/50/100만원). 그외 권종은 고객님께서 직접 은행 방문하시어 현금으로 전환하신 뒤 내점바랍니다." }
+    { "items": ["pay12"], "note": "정액권 수표만 수령 가능합니다(10/50/100만원). 그외 권종은 고객님께서 직접 은행 방문하시어 현금으로 전환하신 뒤 내점바랍니다." },
+    { "items": ["sale1", "sale2"], "note": "세일리지는 현금 및 본인명의 제휴카드 결제 금액에 대해서만 적용됩니다." },
+    { "items": ["pay9"], "note": "전화번호를 통해 포인트 적립 후 SSGPAY로 결제 시 중복 적립으로 결제가 되지 않습니다. 전체 취소 후 전화번호 입력 없이 바로 SSGPAY로 결제 바랍니다." }
   ],
   "failureHints": [
     { "item": "coupon1", "note": "전액 본인 명의 제휴카드 결제 시 사용가능." },
@@ -1284,6 +1286,9 @@ const DATA = {
       "question": "제휴카드 쿠폰과 신백리워드 쿠폰이\n같이 사용이 안돼요",
       "answer": "제휴카드 쿠폰을 먼저 적용한 후 리워드 쿠폰 적용이 필요합니다. 아래 방식대로 진행해 주세요\n\n①제휴카드 꽂은 후 쿠폰 적용\n↓\n② 카드를 뺀 후 팝업창에서 '포인트 적립' 선택\n↓\n③ 리워드 쿠폰 바코드 스캔 후 적용\n↓\n④ 제휴카드 다시 꽂아서 결제 진행" },
     { "id": "faq4",
+      "question": "포인트 적립 후 SSG페이 결제가 안돼요",
+      "answer": "신세계포인트 또는 신백리워드 바코드를 인식한 뒤 결제시\n\n시스템 상 중복 적립으로 처리되어 결제가 진행되지 않습니다\n\n신세계포인트 또는 신백리워드 바코드를 입력하지 않은 상태에서 결제 바랍니다" },
+    { "id": "faq5",
       "question": "저희 브랜드가 세일리지, 임직원 할인이\n가능한지 알 수 있나요?",
       "answer": "영업담당자, 또는 POS운영에 연락하여 확인할 수 있습니다." }
   ]
