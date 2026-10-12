@@ -1222,6 +1222,7 @@ const DATA = {
     { "items": ["coupon1", "coupon4"], "note": "[결제 순서] 결제가격 입력 → 제휴카드를 꽂고, 제휴카드 쿠폰 적용 → 할부 안내 창에서 '취소' 선택 → 리워드 쿠폰 적용" },
     { "items": ["pay11"], "note": "임대상품권 오류 발생 시 영업담당을 통해 '유사상품권 수취계약'이 되어있는지 확인 바랍니다." },
     { "items": ["pay12"], "note": "정액권 수표만 수령 가능합니다(10/50/100만원). 그외 권종은 고객님께서 직접 은행 방문하시어 현금으로 전환하신 뒤 내점바랍니다." },
+    { "items": ["coupon1"], "anyOf": ["sale1", "sale2", "sale3"], "note": "신백리워드 쿠폰 금액이 먼저 적용된 후 남은 금액에 대해 세일리지가 적용됩니다" },
     { "items": ["sale1", "sale2"], "note": "세일리지는 현금 및 본인명의 제휴카드 결제 금액에 대해서만 적용됩니다." },
     { "items": ["pay9"], "note": "전화번호를 통해 포인트 적립 후 SSGPAY로 결제 시 중복 적립으로 결제가 되지 않습니다. 전체 취소 후 전화번호 입력 없이 바로 SSGPAY로 결제 바랍니다." }
   ],
@@ -1615,7 +1616,8 @@ function doConfirm() {
 
   if (cfList.length === 0) {
     const matchedCautions = DATA.cautionRules.filter(rule =>
-      rule.items.every(id => selected.includes(id))
+      rule.items.every(id => selected.includes(id)) &&
+      (!rule.anyOf || rule.anyOf.some(id => selected.includes(id)))
     );
 
     const giftCardSaleNote = "현금 및 신세계 제휴카드로 결제한 금액에 대해서만 세일리지/에누리 적용됩니다.";
